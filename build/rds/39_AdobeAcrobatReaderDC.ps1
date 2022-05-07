@@ -28,7 +28,7 @@ New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue
 # Enforce settings with GPO: https://www.adobe.com/devnet-docs/acrobatetk/tools/AdminGuide/gpo.html
 # Download Reader installer and updater
 Write-Host "Adobe Acrobat Reader DC"
-$Reader = Get-EvergreenApp -Name "AdobeAcrobatReader" | Where-Object { $_.Language -eq $Language -and $_.Architecture -eq $Architecture } | `
+$Reader = Get-EvergreenApp -Name "AdobeAcrobatReaderDC" | Where-Object { $_.Language -eq $Language -and $_.Architecture -eq $Architecture } | `
     Select-Object -First 1
 If ($Reader) {
 
