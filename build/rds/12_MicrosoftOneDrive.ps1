@@ -31,7 +31,7 @@ If ($App) {
         Write-Host "`tInstalling Microsoft OneDrive: $($App.Version)."
         $params = @{
             FilePath     = $OutFile.FullName
-            ArgumentList = "/ALLUSERS"
+            ArgumentList = "/silent /ALLUSERS"
             Wait         = $False
             PassThru     = $True
             Verbose      = $True
