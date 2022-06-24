@@ -182,26 +182,26 @@ jobs:
       #   run: |
       #     rm -f "${{ github.workspace }}/reports/Installed.zip"
 
-      - name: Install and cache PowerShell modules
-        id: psmodulecache
-        uses: potatoqualitee/psmodulecache@v4.5
-        with:
-          modules-to-cache: MarkdownPS, powershell-yaml
-          shell: powershell
+      # - name: Install and cache PowerShell modules
+      #   id: psmodulecache
+      #   uses: potatoqualitee/psmodulecache@v4.5
+      #   with:
+      #     modules-to-cache: MarkdownPS, powershell-yaml
+      #     shell: powershell
 
-      - name: Publish markdown report
-        id: publish-report
-        shell: pwsh
-        run: |
-          $params = @{
-            Path            = "${{ github.workspace }}/reports"
-            ImagePublisher  = ${{ env.SOURCE_IMAGE_PUBLISHER }}
-            ImageOffer      = ${{ env.SOURCE_IMAGE_OFFER }}
-            ImageSku        = ${{ env.SOURCE_IMAGE_SKU }}
-            Version         = "${{ steps.date.outputs.date }}.${{ github.run_number }}"
-            DestinationPath = "${{ github.workspace }}/docs"
-          }
-          . ${{ github.workspace }}/pipeline/Publish-MarkdownReport.ps1 @params
+      # - name: Publish markdown report
+      #   id: publish-report
+      #   shell: pwsh
+      #   run: |
+      #     $params = @{
+      #       Path            = "${{ github.workspace }}/reports"
+      #       ImagePublisher  = ${{ env.SOURCE_IMAGE_PUBLISHER }}
+      #       ImageOffer      = ${{ env.SOURCE_IMAGE_OFFER }}
+      #       ImageSku        = ${{ env.SOURCE_IMAGE_SKU }}
+      #       Version         = "${{ steps.date.outputs.date }}.${{ github.run_number }}"
+      #       DestinationPath = "${{ github.workspace }}/docs"
+      #     }
+      #     . ${{ github.workspace }}/pipeline/Publish-MarkdownReport.ps1 @params
 
       # Import GPG key
       - name: Import GPG key
