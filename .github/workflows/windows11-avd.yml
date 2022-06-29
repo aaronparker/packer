@@ -5,13 +5,10 @@ on:
     branches:
       - main
     paths:
-#      - .github/workflows/windows11-avd.yml
       - templates/rds/PackerTemplate-WindowsAzure.pkr.hcl
-      - build/rds/**.ps1
-      - build/rds/**.xml
+      #- build/rds/**.ps1
+      #- build/rds/**.xml
   workflow_dispatch:
-    branches:
-        - main
 
 env:
   LOCATION: 'AustraliaEast'
