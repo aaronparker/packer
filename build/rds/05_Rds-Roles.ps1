@@ -2,7 +2,7 @@
     .SYNOPSIS
         Enable/disable Windows roles and features and set language/regional settings.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
 param ()
 
@@ -11,12 +11,12 @@ param ()
 $ProgressPreference = "SilentlyContinue"
 
 # Run tasks
-Switch -Regex ((Get-CimInstance -ClassName "CIM_OperatingSystem").Caption) {
+switch -Regex ((Get-CimInstance -ClassName "CIM_OperatingSystem").Caption) {
     "Microsoft Windows Server*" {
         # Add / Remove roles and features (requires reboot at end of deployment)
         try {
             $params = @{
-                FeatureName   = "Printing-XPSServices-Features", "WindowsMediaPlayer"
+                FeatureName   = "Printing-XPSServices-Features"
                 Online        = $true
                 NoRestart     = $true
                 WarningAction = "Continue"
@@ -30,7 +30,7 @@ Switch -Regex ((Get-CimInstance -ClassName "CIM_OperatingSystem").Caption) {
 
         try {
             $params = @{
-                Name                   = "BitLocker", "EnhancedStorage", "PowerShell-ISE"
+                Name                   = "EnhancedStorage", "PowerShell-ISE"
                 IncludeManagementTools = $true
                 WarningAction          = "Continue"
                 ErrorAction            = "Continue"
@@ -49,8 +49,8 @@ Switch -Regex ((Get-CimInstance -ClassName "CIM_OperatingSystem").Caption) {
         Install-WindowsFeature @params
 
         # Enable services
-        If ((Get-WindowsFeature -Name "RDS-RD-Server").InstallState -eq "Installed") {
-            ForEach ($service in "Audiosrv", "WSearch") {
+        if ((Get-WindowsFeature -Name "RDS-RD-Server").InstallState -eq "Installed") {
+            foreach ($service in "Audiosrv", "WSearch") {
                 try {
                     $params = @{
                         Name          = $service
@@ -65,18 +65,18 @@ Switch -Regex ((Get-CimInstance -ClassName "CIM_OperatingSystem").Caption) {
                 }
             }
         }
-        Break
+        break
     }
     "Microsoft Windows 1* Enterprise for Virtual Desktops" {
-        Break
+        break
     }
     "Microsoft Windows 1* Enterprise" {
-        Break
+        break
     }
     "Microsoft Windows 1*" {
-        Break
+        break
     }
-    Default {
+    default {
     }
 }
 

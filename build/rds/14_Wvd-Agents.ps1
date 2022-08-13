@@ -3,9 +3,9 @@
     .SYNOPSIS
         Downloads / installs the Windows Virtual Desktop agents and services
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter(Mandatory = $False)]
     [System.String] $LogPath = "$env:SystemRoot\Logs\Packer",
 
@@ -26,7 +26,7 @@ New-Item -Path $LogPath -ItemType "Directory" -Force -ErrorAction "SilentlyConti
 #region RTC service
 Write-Host "Microsoft WvdAgents."
 $App = Get-EvergreenApp -Name "MicrosoftWvdRtcService" | Where-Object { $_.Architecture -eq "x64"} | Select-Object -First 1
-If ($App) {
+if ($App) {
 
     # Download
     Write-Host "`tDownloading Microsoft Remote Desktop WebRTC Redirector Service"
@@ -49,7 +49,7 @@ If ($App) {
         Write-Warning -Message "`tERR: Failed to install Microsoft Remote Desktop WebRTC Redirector Service."
     }
 }
-Else {
+else {
     Write-Warning -Message "`tERR: Failed to retrieve Microsoft Remote Desktop WebRTC Redirector Service"
 }
 #endregion
@@ -57,8 +57,8 @@ Else {
 #region Boot Loader
 Write-Host "`tMicrosoft Windows Virtual Desktop Agent Bootloader"
 $App = Get-EvergreenApp -Name "MicrosoftWvdBootLoader" | Where-Object { $_.Architecture -eq "x64"} | Select-Object -First 1
-If ($App) {
-    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
+if ($App) {
+    if (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
     # Download
     Write-Host "`tDownloading Microsoft Windows Virtual Desktop Agent Bootloader"
@@ -81,7 +81,7 @@ If ($App) {
         Write-Warning -Message "`tERR: Failed to install Microsoft Windows Virtual Desktop Agent Bootloader"
     }
 }
-Else {
+else {
     Write-Warning -Message "`tERR: Failed to Microsoft Windows Virtual Desktop Agent Bootloader"
 }
 #endregion
@@ -89,7 +89,7 @@ Else {
 #region Infra agent
 Write-Host "`tMicrosoft WVD Infrastructure Agent"
 $App = Get-EvergreenApp -Name "MicrosoftWvdInfraAgent" | Where-Object { $_.Architecture -eq "x64"}
-If ($App) {
+if ($App) {
 
     # Download
     Write-Host "`tDownloading Microsoft WVD Infrastructure Agent: $($App.Version)."
@@ -115,11 +115,11 @@ If ($App) {
     Write-Host " Done"
     #>
 }
-Else {
+else {
     Write-Warning -Message "`tERR: Failed to retrieve Microsoft WVD Infrastructure Agent"
 }
 #endregion
 
-# If (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
+# if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
 Write-Host "Complete: Microsoft WvdAgents."
 #endregion

@@ -211,25 +211,12 @@ build {
   provisioner "powershell" {
     environment_vars = ["Locale=${var.locale}",
                         "PackagesUrl=${var.packages_url}"]
-    scripts          = ["build/rds/01_Rds-PrepImage.ps1",
+    scripts          = ["build/rds/00_SupportFunctions.ps1",
+                        "build/rds/01_Rds-PrepImage.ps1",
                         "build/rds/02_Packages.ps1",
                         "build/rds/03_RegionLanguage.ps1",
+                        "build/rds/04_Customise.ps1"
                         "build/rds/05_Rds-Roles.ps1"]
-  }
-
-  provisioner "powershell" {
-    inline = ["New-Item -Path \"C:\\Apps\\image-customise\" -ItemType \"Directory\" -Force -ErrorAction \"SilentlyContinue\" > $Null"]
-  }
-
-  provisioner "file" {
-    source      = "${var.working_directory}/image-customise/src/"
-    destination = "C:\\Apps\\image-customise"
-    direction   = "upload"
-    max_retries = "2"
-  }
-
-  provisioner "powershell" {
-    scripts = ["build/rds/04_Customise.ps1"]
   }
 
   provisioner "windows-update" {
@@ -239,8 +226,7 @@ build {
   }
 
   provisioner "powershell" {
-    scripts = ["build/rds/06_SupportFunctions.ps1",
-                "build/rds/07_MicrosoftVcRedists.ps1",
+    scripts = ["build/rds/07_MicrosoftVcRedists.ps1",
                 "build/rds/08_MicrosoftFSLogixApps.ps1",
                 "build/rds/09_MicrosoftEdge.ps1",
                 "build/rds/10_Microsoft365Apps.ps1",

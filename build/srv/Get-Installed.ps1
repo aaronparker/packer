@@ -1,6 +1,6 @@
 <#
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
 param (
     [Parameter()]
@@ -82,7 +82,7 @@ $software | ConvertTo-Json | Out-File -FilePath $SoftwareFile -Force -Encoding "
 # Get the installed packages
 Write-Host " Export packages list to: $PackagesFile."
 $packages = Get-ProvisionedAppPackage -Online | Select-Object -Property "DisplayName", "Version"
-If ($Null -ne $packages) { $packages | ConvertTo-Json | Out-File -FilePath $PackagesFile -Force -Encoding "Utf8" }
+if ($Null -ne $packages) { $packages | ConvertTo-Json | Out-File -FilePath $PackagesFile -Force -Encoding "Utf8" }
 
 # Get the installed hotfixes
 Write-Host " Export hotfix list to: $HotfixFile."

@@ -3,9 +3,9 @@
     .SYNOPSIS
         Install evergreen core applications.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\Apps\Microsoft\Teams"
 )
@@ -20,7 +20,7 @@ New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue
 # Run tasks/install apps
 Write-Host "Microsoft Teams"
 $App = Get-EvergreenApp -Name "MicrosoftTeams" | Where-Object { $_.Architecture -eq "x64" -and $_.Ring -eq "General" -and $_.Type -eq "msi" } | Select-Object -First 1
-If ($App) {
+if ($App) {
 
     # Download
     $OutFile = Save-EvergreenApp -InputObject $App -Path $Path -WarningAction "SilentlyContinue"
@@ -45,7 +45,7 @@ If ($App) {
         Write-Warning -Message "`tERR: Failed to install Microsoft Teams with: $($Result.ExitCode)."
     }
 }
-Else {
+else {
     Write-Host "`tFailed to retrieve Microsoft Teams."
 }
 
@@ -54,8 +54,8 @@ $ConfigFiles = @((Join-Path -Path "${env:ProgramFiles(x86)}\Teams Installer" -Ch
     (Join-Path -Path "${env:ProgramFiles(x86)}\Microsoft\Teams" -ChildPath "setup.json"))
 
 # Read the file and convert from JSON
-ForEach ($Path in $ConfigFiles) {
-    If (Test-Path -Path $Path) {
+foreach ($Path in $ConfigFiles) {
+    if (Test-Path -Path $Path) {
         try {
             $Json = Get-Content -Path $Path | ConvertFrom-Json
             $Json.noAutoStart = $true
@@ -70,6 +70,6 @@ ForEach ($Path in $ConfigFiles) {
 # Delete the registry auto-start
 REG delete "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run" /v "Teams" /f 2> $Null
 
-# If (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
+# if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
 Write-Host "Complete: Microsoft Teams."
 #endregion

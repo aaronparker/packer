@@ -1,4 +1,4 @@
-Function Test-PendingReboot {
+function Test-PendingReboot {
     <#
         .SYNOPSIS
             Tests for pending reboot on Windows
@@ -9,7 +9,7 @@ Function Test-PendingReboot {
     #>
     [OutputType([Boolean])]
     [CmdletBinding()]
-    Param ()
+    param ()
 
     Return ([bool]((Get-ItemProperty "hklm:SYSTEM\CurrentControlSet\Control\Session Manager").RebootPending) -or
         [bool]((Get-ItemProperty "HKLM:SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update").RebootRequired) -or

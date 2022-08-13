@@ -35,11 +35,11 @@
     .DESCRIPTION
     Install language support on Windows 10.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "")]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemRoot\Temp",
 
@@ -91,14 +91,14 @@ $LanguageFiles = @{
 
 
 #region Functions
-Function Show-SupportedLanguage () {
+function Show-SupportedLanguage () {
     #ListSupportedLanguages
     foreach ($num in 1..$Language.Count) {
         Write-Host "`n[$num] $($LanguageDescription[$num-1])"
     }
 }
 
-Function Save-File ($FileName, $Url, $OutFile) {
+function Save-File ($FileName, $Url, $OutFile) {
     #DownloadFile
     $ProgressPreference = "SilentlyContinue"
     try {
@@ -115,56 +115,56 @@ Function Save-File ($FileName, $Url, $OutFile) {
     }
 }
 
-Function Get-WinVer {
+function Get-WinVer {
     try {
         $DisplayVersion = (Get-Item -Path "HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion" -ErrorAction "SilentlyContinue").GetValue("DisplayVersion")
     }
     catch {
         $DisplayVersion = $Null
     }
-    If ((![System.String]::IsNullOrWhiteSpace($DisplayVersion))) {
+    if ((![System.String]::IsNullOrWhiteSpace($DisplayVersion))) {
         $WinVer = (Get-Item -Path "HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion" -ErrorAction "SilentlyContinue").GetValue("ReleaseId")
     }
     Return $WinVer
 }
 
-Function Save-LanguageFile () {
+function Save-LanguageFile () {
     #DownloadLanguageFiles
     $Files = $languageFiles[(Get-WinVer)]
     $Space = 20 #Total space required to download and install
 
     # Test whether the ISO has been downloaded already
-    ForEach ($FileName in $Files.Keys) {
+    foreach ($FileName in $Files.Keys) {
         $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $Files[$FileName] -Leaf)
-        If (Test-Path -Path $OutFile) { $Space -= 5 }
+        if (Test-Path -Path $OutFile) { $Space -= 5 }
     }
 
     # Download each ISO
     $CDrive = Get-CimInstance -Class "Win32_LogicalDisk" -Filter "DeviceID='C:'"
-    If ([System.Math]::Round($CDrive.FreeSpace / 1GB) -lt $Space) {
+    if ([System.Math]::Round($CDrive.FreeSpace / 1GB) -lt $Space) {
         Write-Warning -Message "Not enough capacity on $($env:SystemDrive) to install language support. $Space GB of free space required."
-        Break Script
+        break Script
     }
 
-    ForEach ($FileName in $Files.Keys) {
+    foreach ($FileName in $Files.Keys) {
         $FileUrl = $Files[$FileName]
         $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $Files[$FileName] -Leaf)
 
-        If (Test-Path -Path $OutFile) {
+        if (Test-Path -Path $OutFile) {
             # File exists
         }
-        Else {
+        else {
             Save-File -FileName $FileName -Url $FileUrl -OutFile $OutFile
         }
     }
 }
 
-Function Get-OutputFilePath ($FileName) { #GetOutputFilePath
+function Get-OutputFilePath ($FileName) { #GetOutputFilePath
     #GetOutputFilePath
     Return $(Join-Path -Path $Path -ChildPath (Split-Path -Path $LanguageFiles[$WinVer][$FileName] -Leaf))
 }
 
-Function Mount-File ($FilePath) { #MountFile
+function Mount-File ($FilePath) { #MountFile
     try {
         $Result = Mount-DiskImage -ImagePath $FilePath -PassThru
         Return ($Result | Get-Volume).DriveLetter
@@ -174,11 +174,11 @@ Function Mount-File ($FilePath) { #MountFile
     }
 }
 
-Function Dismount-File ($FilePath) { #DismountFile
+function Dismount-File ($FilePath) { #DismountFile
     Dismount-DiskImage -ImagePath $FilePath | Out-Null
 }
 
-Function Remove-LanguageFile () {
+function Remove-LanguageFile () {
     #CleanupLanguageFiles
     try { Remove-Item -Path $(Get-OutputFilePath -FileName "LanguagePack") -Force }
     catch { Write-Warning -Message "Failed to remove: $(Get-OutputFilePath -FileName "LanguagePack")." }
@@ -190,7 +190,7 @@ Function Remove-LanguageFile () {
     catch { Write-Warning -Message "Failed to remove: $(Get-OutputFilePath -FileName "InboxApps")." }
 }
 
-Function Install-LanguagePackage ($LanguageCode, $DriveLetter) { #InstallLanguagePackage
+function Install-LanguagePackage ($LanguageCode, $DriveLetter) { #InstallLanguagePackage
     Write-Host "Installing language pack for: $languageCode."
 
     try {
@@ -219,9 +219,9 @@ Function Install-LanguagePackage ($LanguageCode, $DriveLetter) { #InstallLanguag
     }
 }
 
-Function Add-ValidWindowsPackage ($FilePath) {
+function Add-ValidWindowsPackage ($FilePath) {
     #Add-ValidWindowsPackage
-    If (Test-Path -Path $FilePath) {
+    if (Test-Path -Path $FilePath) {
         Write-Host "Installing: $FilePath."
         try {
             $params = @{
@@ -237,9 +237,9 @@ Function Add-ValidWindowsPackage ($FilePath) {
     }
 }
 
-Function Install-FeaturesOnDemand ($LanguageCode, $DriveLetter) { #InstallFOD
+function Install-FeaturesOnDemand ($LanguageCode, $DriveLetter) { #InstallFOD
     Write-Host "Installing features on demand for: $LanguageCode."
-    If ($LanguageCode -eq "zh-CN") {
+    if ($LanguageCode -eq "zh-CN") {
         Add-ValidWindowsPackage -FilePath $([System.IO.Path]::Combine("$($DriveLetter):", "Microsoft-Windows-LanguageFeatures-Fonts-Hans-Package~31bf3856ad364e35~amd64~~.cab"))
     }
 
@@ -256,12 +256,12 @@ Function Install-FeaturesOnDemand ($LanguageCode, $DriveLetter) { #InstallFOD
         "Microsoft-Windows-Printing-WFS-FoD-Package~31bf3856ad364e35~amd64~$LanguageCode~.cab",
         "Microsoft-Windows-StepsRecorder-Package~31bf3856ad364e35~amd64~$LanguageCode~.cab",
         "Microsoft-Windows-WordPad-FoD-Package~31bf3856ad364e35~amd64~$LanguageCode~.cab")
-    ForEach ($Package in $Packages) {
+    foreach ($Package in $Packages) {
         Add-ValidWindowsPackage -FilePath $([System.IO.Path]::Combine("$($DriveLetter):", $Package))
     }
 }
 
-Function Update-LanguageList ($LanguageCode) { #UpdateLanguageList
+function Update-LanguageList ($LanguageCode) { #UpdateLanguageList
     #UpdateLanguageList
     Write-Host "Adding $languageCode to LanguageList"
     $LanguageList = Get-WinUserLanguageList
@@ -269,29 +269,29 @@ Function Update-LanguageList ($LanguageCode) { #UpdateLanguageList
     Set-WinUserLanguageList -LanguageList $LanguageList -Force
 }
 
-Function Install-InboxApp () { #InstallInboxApps
+function Install-InboxApp () { #InstallInboxApps
     Write-Host "Installing InboxApps"
 
     $File = Get-OutputFilePath -FileName "InboxApps"
     $DriveLetter = Mount-File -FilePath $File
     $AppsContent = "$($DriveLetter):\amd64fre"
 
-    ForEach ($App in (Get-AppxProvisionedPackage -Online)) {
+    foreach ($App in (Get-AppxProvisionedPackage -Online)) {
         $AppPath = "$($AppsContent)$($App.DisplayName)_$($App.PublisherId)"
         Write-Host "Handling $AppPath."
 
         $LicFile = Get-Item -Path "$($AppPath)*.xml"
-        If ($LicFile.Count -gt 0) {
+        if ($LicFile.Count -gt 0) {
             $Lic = $true
             $LicFilePath = $LicFile.FullName
         }
-        Else {
+        else {
             $lic = $false
         }
 
         $appxFile = Get-Item -Path "$($AppPath)*.appx*"
-        If ($AppxFile.Count -gt 0) {
-            If ($lic) {
+        if ($AppxFile.Count -gt 0) {
+            if ($lic) {
 
                 try {
                     $params = @{
@@ -306,7 +306,7 @@ Function Install-InboxApp () { #InstallInboxApps
                     Write-Warning -Message "Add-AppxProvisionedPackage failed with: $($_.Exception.Message)."
                 }
             }
-            Else {
+            else {
 
                 try {
                     $params = @{
@@ -327,7 +327,7 @@ Function Install-InboxApp () { #InstallInboxApps
     DismountFile $file
 }
 
-Function Install-LanguageFile ($LanguageCode) { #InstallLanguageFiles
+function Install-LanguageFile ($LanguageCode) { #InstallLanguageFiles
 
     $LanguagePackDriveLetter = Mount-File -FilePath (Get-OutputFilePath -FileName "LanguagePack")
     $FodDriveLetter = Mount-File -FilePath (Get-OutputFilePath -FileName "FOD")
@@ -342,7 +342,7 @@ Function Install-LanguageFile ($LanguageCode) { #InstallLanguageFiles
     Install-InboxApp
 }
 
-Function Install() { #Install
+function Install() { #Install
 
     ListSupportedLanguages
     $languageNumber = Read-Host "Select number to install language"
@@ -359,7 +359,7 @@ Function Install() { #Install
     CleanupLanguageFiles
 }
 
-If (!(test-path $downloadPath)) {
+if (!(test-path $downloadPath)) {
     New-Item -ItemType Directory -Force -Path $downloadPath
 }
 
@@ -368,7 +368,7 @@ $currentWindowsPrincipal = [Security.Principal.WindowsPrincipal]$currentWindowsI
 
 if( -not $currentWindowsPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){
     Write-Host "Script needs to be run as Administrator." -ForegroundColor red
-    Break Script
+    break Script
 }
 
 $winver = (Get-Item "HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion").GetValue('DisplayVersion')
@@ -378,7 +378,7 @@ if (!$winver) {
 
 if (!$languageFiles[$winver]){
     Write-Host "Languages installer is not supported Windows $winver." -ForegroundColor red
-    Break Script
+    break Script
 }
 
 ##Disable language pack cleanup##

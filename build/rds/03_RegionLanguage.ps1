@@ -2,20 +2,20 @@
     .SYNOPSIS
         Set language/regional settings.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\Apps\Locale"
 )
 
 #region Functions
-Function Set-RegionSetting ($Path, $Locale) {
-    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
+function Set-RegionSetting ($Path, $Locale) {
+    if (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
     # Select the locale
-    Switch ($Locale) {
+    switch ($Locale) {
         "en-US" {
             # United States
             $GeoId = 244
@@ -158,8 +158,8 @@ $env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe -NonInteractive -
     #endregion
 }
 
-Function Install-LanguageCapability ($Locale) {
-    Switch ($Locale) {
+function Install-LanguageCapability ($Locale) {
+    switch ($Locale) {
         "en-US" {
             # United States
             $Language = "en-US"
@@ -172,17 +172,17 @@ Function Install-LanguageCapability ($Locale) {
             # Australia
             $Language = "en-AU", "en-GB"
         }
-        Default {
+        default {
             # Australia
             $Language = "en-AU", "en-GB"
         }
     }
 
     # Install Windows capability packages using Windows Update
-    ForEach ($lang in $Language) {
+    foreach ($lang in $Language) {
         Write-Verbose -Message "$($MyInvocation.MyCommand): Adding packages for [$lang]."
         $Capabilities = Get-WindowsCapability -Online | Where-Object { $_.Name -like "Language*$lang*" }
-        ForEach ($Capability in $Capabilities) {
+        foreach ($Capability in $Capabilities) {
             try {
                 Add-WindowsCapability -Online -Name $Capability.Name -LogLevel 2
             }
@@ -203,10 +203,10 @@ $ProgressPreference = "SilentlyContinue"
 New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
 
 # Run tasks
-If (Test-Path -Path env:Locale) {
+if (Test-Path -Path env:Locale) {
     $Locale = $env:Locale
 }
-Else {
+else {
     Write-Host " Can't find passed parameter, setting Locale to en-AU."
     $Locale = "en-AU"
 }

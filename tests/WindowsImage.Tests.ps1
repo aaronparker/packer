@@ -4,7 +4,7 @@
     .SYNOPSIS
         Runs Pester tests against a Windows 10 VM to confirm a desired configuration
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
 [CmdletBinding()]
 Param()
@@ -49,7 +49,7 @@ Switch -Regex ($Edition.Edition) {
         $VcReleases = @("2019")
     }
 }
-Switch ([intptr]::Size) {
+switch ([intptr]::Size) {
     4 { $Proc = "x86" }
     8 { $Proc = "x64" }
 }
@@ -65,7 +65,7 @@ Describe "Windows version validation tests" {
 
 Describe "Windows feature validation tests" {
     Context "Validate removed or disabled features" {
-        ForEach ($Feature in $NotInstalled) {
+        foreach ($Feature in $NotInstalled) {
             It "Should not have $Feature installed" {
                 Switch -Regex ($Edition.Edition) {
                     "Pro|Enterprise" {
@@ -79,7 +79,7 @@ Describe "Windows feature validation tests" {
         }
     }
     Context "Validate installed features" {
-        ForEach ($Feature in $Installed) {
+        foreach ($Feature in $Installed) {
             It "Should have $Feature installed" {
                 Switch -Regex ($Edition.Edition) {
                     "Pro|Enterprise" {
@@ -121,7 +121,7 @@ Describe "Windows software validation tests" {
     Context "Validate installed Visual C++ Redistributables" {
         Write-Host -ForegroundColor Cyan "`n`tGetting installed Visual C++ Redistributables."
         $InstalledVcRedists = Get-InstalledVcRedist
-        ForEach ($VcRedist in (Get-VcList -Release $VcReleases)) {
+        foreach ($VcRedist in (Get-VcList -Release $VcReleases)) {
             It "Should have Visual C++ Redistributable $($VcRedist.Release) $($VcRedist.Architecture) $($VcRedist.Version) installed" {
                 $Match = $InstalledVcRedists | Where-Object { ($_.Release -eq $VcRedist.Release) -and ($_.Architecture -eq $VcRedist.Architecture) }
                 $Match.ProductCode | Should -Match $VcRedist.ProductCode

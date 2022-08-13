@@ -2,9 +2,9 @@
     .SYNOPSIS
         Customise a Windows image for use as an WVD/XenApp VM in Azure.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\Apps\image-customise\src",
 
@@ -21,7 +21,7 @@ Get-ChildItem -Path $Path
 $Script = Get-ChildItem -Path $Path -Filter $InvokeScript -Recurse | Select-Object -First 1
 
 # Validate customisation scripts; Run scripts
-If ($Null -ne $Script) {
+if ($Null -ne $Script) {
     try {
         Push-Location -Path $Path
         Write-Host " Running script: $($Script.FullName)."
@@ -32,7 +32,7 @@ If ($Null -ne $Script) {
         Write-Warning -Message " ERR: $($Script.FullName) error with: $($_.Exception.Message)."
     }
 }
-Else {
+else {
     Write-Warning -Message " ERR: Could not find $InvokeScript in $Path."
 }
 

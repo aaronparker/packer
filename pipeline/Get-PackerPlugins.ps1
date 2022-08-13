@@ -2,7 +2,7 @@
     .SYNOPSIS
         Downloads Hashicorp Packer plugins
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
 param (
     [Parameter()]
@@ -10,7 +10,7 @@ param (
 )
 
 #region Functions
-Function Get-GitHubRepoRelease {
+function Get-GitHubRepoRelease {
     <#
         .SYNOPSIS
             Calls the GitHub Releases API passed via $Uri, validates the response and returns a formatted object
@@ -53,16 +53,16 @@ Function Get-GitHubRepoRelease {
         Throw "$($MyInvocation.MyCommand): $($_.Exception.Message)."
     }
 
-    If ($Null -ne $release) {
+    if ($Null -ne $release) {
 
         # Build and array of the latest release and download URLs
         Write-Verbose -Message "$($MyInvocation.MyCommand): Found $($release.count) releases."
         Write-Verbose -Message "$($MyInvocation.MyCommand): Found $($release.assets.count) assets."
-        ForEach ($item in $release) {
-            ForEach ($asset in $item.assets) {
+        foreach ($item in $release) {
+            foreach ($asset in $item.assets) {
 
                 # Filter downloads by matching the RegEx in the manifest. The the RegEx may perform includes and excludes
-                If ($asset.browser_download_url -match $Filter) {
+                if ($asset.browser_download_url -match $Filter) {
                     Write-Verbose -Message "$($MyInvocation.MyCommand): Building Windows release output object with: $($asset.browser_download_url)."
 
                     # Capture the version string from the specified release tag
@@ -82,7 +82,7 @@ Function Get-GitHubRepoRelease {
                     }
                     Write-Output -InputObject $PSObject
                 }
-                Else {
+                else {
                     Write-Verbose -Message "$($MyInvocation.MyCommand): Skip: $($asset.browser_download_url)."
                 }
             }
@@ -90,7 +90,7 @@ Function Get-GitHubRepoRelease {
     }
 }
 
-Function Get-Platform {
+function Get-Platform {
     [OutputType([System.String])]
     [CmdletBinding(SupportsShouldProcess = $False)]
     param (
@@ -100,15 +100,15 @@ Function Get-Platform {
     )
 
     Switch -Regex ($String) {
-        "rhel" { $platform = "RHEL"; Break }
-        "\.rpm" { $platform = "RedHat"; Break }
-        "\.tar.gz|linux" { $platform = "Linux"; Break }
-        "\.nupkg" { $platform = "NuGet"; Break }
-        "mac|osx|darwin" { $platform = "macOS"; Break }
-        "\.deb|debian" { $platform = "Debian"; Break }
-        "ubuntu" { $platform = "Ubuntu"; Break }
-        "centos" { $platform = "CentOS"; Break }
-        "\.exe|\.msi|windows|win" { $platform = "Windows"; Break }
+        "rhel" { $platform = "RHEL"; break }
+        "\.rpm" { $platform = "RedHat"; break }
+        "\.tar.gz|linux" { $platform = "Linux"; break }
+        "\.nupkg" { $platform = "NuGet"; break }
+        "mac|osx|darwin" { $platform = "macOS"; break }
+        "\.deb|debian" { $platform = "Debian"; break }
+        "ubuntu" { $platform = "Ubuntu"; break }
+        "centos" { $platform = "CentOS"; break }
+        "\.exe|\.msi|windows|win" { $platform = "Windows"; break }
         Default {
             Write-Verbose -Message "$($MyInvocation.MyCommand): Platform not found, defaulting to Windows."
             $platform = "Windows"
@@ -129,7 +129,7 @@ $Latest = [PSCustomObject]@{
     URI     = "https://github.com/rgl/packer-plugin-windows-update/releases/download/v0.11.0/packer-provisioner-windows-update_0.11.0_windows_amd64.zip"
 }
 
-If ($Null -ne $Latest) {
+if ($Null -ne $Latest) {
     Write-Host " Found version: $($Latest.Version)."
     $OutFile = Join-Path -Path $([System.IO.Path]::GetTempPath()) -ChildPath (Split-Path -Path $Latest.URI -Leaf)
 
@@ -147,7 +147,7 @@ If ($Null -ne $Latest) {
     }
     catch {
         Write-Error -Message $_.Exception.Message
-        Break
+        break
     }
     finally {
         Expand-Archive -Path $OutFile -DestinationPath $Path -Verbose

@@ -2,15 +2,15 @@
     .SYNOPSIS
         Downloads packages from blob storage and applies to the local machine.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\Apps\Packages"
 )
 
 #region Functions
-Function Get-AzureBlobItem {
+function Get-AzureBlobItem {
     <#
         .SYNOPSIS
             Returns an array of items and properties from an Azure blog storage URL.
@@ -36,7 +36,7 @@ Function Get-AzureBlobItem {
     #>
     [CmdletBinding(SupportsShouldProcess = $False)]
     [OutputType([System.Management.Automation.PSObject])]
-    Param (
+    param (
         [Parameter(ValueFromPipeline = $True, Mandatory = $True, HelpMessage = "Azure blob storage URL with List Containers request URI '?comp=list'.")]
         [ValidatePattern("^(http|https)://")]
         [System.String] $Uri
@@ -60,12 +60,12 @@ Function Get-AzureBlobItem {
             Write-Warning -Message "$($MyInvocation.MyCommand): failed to download: $Uri."
             Throw $_.Exception.Message
         }
-        If ($Null -ne $list) {
+        if ($Null -ne $list) {
             [System.Xml.XmlDocument] $xml = $list.Content.Substring($list.Content.IndexOf("<?xml", 0))
 
             # Build an object with file properties to return on the pipeline
             $fileList = New-Object -TypeName System.Collections.ArrayList
-            ForEach ($node in (Select-Xml -XPath "//Blobs/Blob" -Xml $xml).Node) {
+            foreach ($node in (Select-Xml -XPath "//Blobs/Blob" -Xml $xml).Node) {
                 $PSObject = [PSCustomObject] @{
                     Name         = ($node | Select-Object -ExpandProperty Name)
                     Url          = ($node | Select-Object -ExpandProperty Url)
@@ -74,7 +74,7 @@ Function Get-AzureBlobItem {
                 }
                 $fileList.Add($PSObject) > $Null
             }
-            If ($Null -ne $fileList) {
+            if ($Null -ne $fileList) {
                 Write-Output -InputObject $fileList
             }
         }
@@ -82,8 +82,8 @@ Function Get-AzureBlobItem {
     end {}
 }
 
-Function Install-LanguageCapability ($Locale) {
-    Switch ($Locale) {
+function Install-LanguageCapability ($Locale) {
+    switch ($Locale) {
         "en-US" {
             # United States
             $Language = "en-US"
@@ -103,10 +103,10 @@ Function Install-LanguageCapability ($Locale) {
     }
 
     # Install Windows capability packages using Windows Update
-    ForEach ($lang in $Language) {
+    foreach ($lang in $Language) {
         Write-Verbose -Message "$($MyInvocation.MyCommand): Adding packages for [$lang]."
         $Capabilities = Get-WindowsCapability -Online | Where-Object { $_.Name -like "Language*$lang*" }
-        ForEach ($Capability in $Capabilities) {
+        foreach ($Capability in $Capabilities) {
             try {
                 Add-WindowsCapability -Online -Name $Capability.Name -LogLevel 2
             }
@@ -117,7 +117,7 @@ Function Install-LanguageCapability ($Locale) {
     }
 }
 
-Function Install-ImagePackage ($Path, $PackagesUrl) {
+function Install-ImagePackage ($Path, $PackagesUrl) {
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -129,10 +129,10 @@ Function Install-ImagePackage ($Path, $PackagesUrl) {
         Write-Warning -Message " ERR: Failed to retrieve items from: [$PackagesUrl]."
     }
 
-    ForEach ($item in $Items) {
+    foreach ($item in $Items) {
         $AppName = $item.Name -replace ".zip"
         $AppPath = Join-Path -Path $Path -ChildPath $AppName
-        If (!(Test-Path $AppPath)) { New-Item -Path $AppPath -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
+        if (!(Test-Path $AppPath)) { New-Item -Path $AppPath -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
         Write-Host " Downloading item: [$($item.Url)]."
         $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $item.Url -Leaf)
@@ -141,7 +141,7 @@ Function Install-ImagePackage ($Path, $PackagesUrl) {
         }
         catch {
             Write-Host " Failed to download: $($item.Url)."
-            Break
+            break
         }
         Expand-Archive -Path $OutFile -DestinationPath $AppPath -Force
         Remove-Item -Path $OutFile -Force -ErrorAction SilentlyContinue

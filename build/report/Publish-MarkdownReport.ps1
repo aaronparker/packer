@@ -3,9 +3,9 @@
         Creates markdown from JSON output generated from Azure DevOps builds
         Uses environment variables created inside the Azure DevOps environment
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter()]
     [System.String] $Path = ([System.IO.Path]::Combine($env:SYSTEM_DEFAULTWORKINGDIRECTORY, "reports")),
 
@@ -44,7 +44,7 @@ $markdown += "`n`n"
 
 # Read the contents of the output files, convert to markdown
 [System.Array] $InputFile = Get-ChildItem -Path $Path -Filter "*.json" | Sort-Object -Descending
-ForEach ($file in $InputFile) {
+foreach ($file in $InputFile) {
     try {
         Write-Host " Reading: $($file.FullName)."
         $table = Get-Content -Path $file.FullName | ConvertFrom-Json
@@ -53,7 +53,7 @@ ForEach ($file in $InputFile) {
         Write-Warning -Message $_.Exception.Message
     }
 
-    If ($table) {
+    if ($table) {
         $markdown += New-MDHeader -Text ($file.Name -replace ".json", "") -Level 2 -NoNewLine
         $markdown += "`n`n"
         $markdown += $table | Sort-Object -Property "Publisher", "Name", "Version" | New-MDTable

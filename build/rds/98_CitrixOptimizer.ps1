@@ -2,9 +2,9 @@
     .SYNOPSIS
         Optimise and seal a Windows image.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\Apps\Tools",
 
@@ -25,12 +25,12 @@ Write-Host "Citrix Optimizer."
 Write-Host "`tUsing path: $Path."
 $Installer = Get-ChildItem -Path $Path -Filter "CitrixOptimizer.zip" -Recurse -ErrorAction "SilentlyContinue"
 
-If ($Installer) {
+if ($Installer) {
     Write-Host "`tFound zip file: $($Installer.FullName)."
     Expand-Archive -Path $Installer.FullName -DestinationPath $Path -Force
 
     $Template = Get-ChildItem -Path $Path -Recurse -Filter $OptimizerTemplate
-    If ($Template) {
+    if ($Template) {
         Write-Host "`tFound template file: $($Template.FullName)."
         try {
             $OptimizerBin = Get-ChildItem -Path $Path -Recurse -Filter "CtxOptimizerEngine.ps1"
@@ -52,15 +52,15 @@ If ($Installer) {
             Write-Warning -Message "`tERR: Citrix Optimizer exited with: $($_.Exception.Message)."
         }
     }
-    Else {
+    else {
         Write-Warning -Message "`tERR: Failed to find Citrix Optimizer template: $OptimizerTemplate in $Path."
     }
 }
-Else {
+else {
     Write-Warning -Message "`tERR: Failed to find Citrix Optimizer in: $Path."
 }
 #endregion
 
-# If (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
+# if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
 Write-Host "Complete: Citrix Optimizer."
 #endregion

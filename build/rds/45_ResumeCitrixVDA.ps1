@@ -2,14 +2,14 @@
     .SYNOPSIS
         Install evergreen core applications.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter(Mandatory = $False)]
     [System.String] $FilePath = "$Env:ProgramData\Citrix\XenDesktopSetup\XenDesktopVdaSetup.exe"
 )
 
-If (Test-Path -Path $FilePath) {
+if (Test-Path -Path $FilePath) {
     Write-Host "Citrix VDA found. Starting resume..."
     try {
         $params = @{
@@ -22,15 +22,15 @@ If (Test-Path -Path $FilePath) {
         $process = Start-Process @params
     }
     catch {
-        If ($process.ExitCode -ne 0) {
+        if ($process.ExitCode -ne 0) {
             Write-Host "`tErr: Citrix VDA Setup exited with: $($process.ExitCode)."
         }
-        Else {
+        else {
             Write-Host "`tCitrix VDA Setup exited with: $($process.ExitCode)."
         }
     }
     Write-Host "`tCitrix VDA resume complete with: $($process.ExitCode)."
 }
-Else {
+else {
     Write-Host "Citrix VDA not found. Skipping resume."
 }

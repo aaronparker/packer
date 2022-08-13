@@ -2,14 +2,14 @@
     .SYNOPSIS
         Install evergreen core applications.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
 param ()
 
 #region Script logic
 # Trust the PSGallery for modules
 $Repository = "PSGallery"
-If (Get-PSRepository | Where-Object { $_.Name -eq $Repository -and $_.InstallationPolicy -ne "Trusted" }) {
+if (Get-PSRepository | Where-Object { $_.Name -eq $Repository -and $_.InstallationPolicy -ne "Trusted" }) {
     try {
         Write-Host " Trusting the repository: $Repository."
         Install-PackageProvider -Name "NuGet" -MinimumVersion 2.8.5.208 -Force
@@ -22,13 +22,13 @@ If (Get-PSRepository | Where-Object { $_.Name -eq $Repository -and $_.Installati
 
 # Install the Evergreen module; https://github.com/aaronparker/Evergreen
 # Install the VcRedist module; https://docs.stealthpuppy.com/vcredist/
-ForEach ($module in "Evergreen", "VcRedist") {
+foreach ($module in "Evergreen", "VcRedist") {
     Write-Host " Checking module: $module"
     $installedModule = Get-Module -Name $module -ListAvailable -ErrorAction "SilentlyContinue" | `
         Sort-Object -Property @{ Expression = { [System.Version]$_.Version }; Descending = $true } | `
         Select-Object -First 1
     $publishedModule = Find-Module -Name $module -ErrorAction "SilentlyContinue"
-    If (($Null -eq $installedModule) -or ([System.Version]$publishedModule.Version -gt [System.Version]$installedModule.Version)) {
+    if (($Null -eq $installedModule) -or ([System.Version]$publishedModule.Version -gt [System.Version]$installedModule.Version)) {
         Write-Host " Installing module: $module"
         $params = @{
             Name               = $module

@@ -3,9 +3,9 @@
     .SYNOPSIS
         Install evergreen core applications.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\Apps\Microsoft\Edge"
 )
@@ -21,7 +21,7 @@ Write-Host "Microsoft Edge"
 $App = Get-EvergreenApp -Name "MicrosoftEdge" | Where-Object { $_.Architecture -eq "x64" -and $_.Channel -eq "Stable" -and $_.Release -eq "Enterprise" } `
 | Sort-Object -Property @{ Expression = { [System.Version]$_.Version }; Descending = $true } | Select-Object -First 1
 
-If ($App) {
+if ($App) {
 
     # Download
     Write-Host "`tMicrosoft Edge: $($App.Version)."
@@ -69,13 +69,13 @@ If ($App) {
     $prefs | ConvertTo-Json | Set-Content -Path "${Env:ProgramFiles(x86)}\Microsoft\Edge\Application\master_preferences" -Force -Encoding "utf8"
     Remove-Item -Path "$env:Public\Desktop\Microsoft Edge*.lnk" -Force -ErrorAction SilentlyContinue
     $services = "edgeupdate", "edgeupdatem", "MicrosoftEdgeElevationService"
-    ForEach ($service in $services) { Get-Service -Name $service | Set-Service -StartupType "Disabled" }
-    ForEach ($task in (Get-ScheduledTask -TaskName *Edge*)) { Unregister-ScheduledTask -TaskName $Task -Confirm:$False -ErrorAction SilentlyContinue }
+    foreach ($service in $services) { Get-Service -Name $service | Set-Service -StartupType "Disabled" }
+    foreach ($task in (Get-ScheduledTask -TaskName *Edge*)) { Unregister-ScheduledTask -TaskName $Task -Confirm:$False -ErrorAction SilentlyContinue }
 }
-Else {
+else {
     Write-Warning -Message "`tERR: Failed to retrieve Microsoft Edge"
 }
 
-# If (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
+# if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
 Write-Host "Complete: Microsoft Edge."
 #endregion

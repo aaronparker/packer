@@ -21,7 +21,7 @@ $r = Invoke-RestMethod -Uri "https://api.uupdump.net/get.php?id=$uuid&lang=$lang
 $LanguageFiles = $r.response.files[0].PsObject.properties | Where-Object { $_.Name -match "Language" } | Select-Object -ExpandProperty "Name"
 
 $ProgressPreference = "SilentlyContinue"
-ForEach ($File in $LanguageFiles) {
+foreach ($File in $LanguageFiles) {
     $params = @{
         Uri             = $r.response.files[0].$File.url
         OutFile         = "./$File"

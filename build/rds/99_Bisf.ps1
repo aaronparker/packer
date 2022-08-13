@@ -3,9 +3,9 @@
     .SYNOPSIS
         Optimise and seal a Windows image.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\Apps\Tools"
 )
@@ -21,7 +21,7 @@ Write-Host "BISF"
 Write-Host "`tUsing path: $Path."
 
 $App = Get-EvergreenApp -Name "BISF"
-If ($App) {
+if ($App) {
 
     # Download the latest BIS-F
     $OutFile = Save-EvergreenApp -InputObject $App -Path $Path -WarningAction "SilentlyContinue"
@@ -45,7 +45,7 @@ If ($App) {
     # If BIS-F installed OK, continue
     $BisfInstall = Join-Path -Path ${env:ProgramFiles(x86)} -ChildPath "Base Image Script Framework (BIS-F)"
     Write-Host "BIS-F install path: $BisfInstall."
-    If (Test-Path -Path $BisfInstall -ErrorAction "SilentlyContinue") {
+    if (Test-Path -Path $BisfInstall -ErrorAction "SilentlyContinue") {
 
         # Remove Start menu shortcut if it exists
         Write-Host "`tRemove BIS-F Start menu shortcut."
@@ -115,13 +115,13 @@ If ($App) {
             Write-Warning -Message "`tERR: BIS-F exited with: $($_.Exception.Message)."
         }
     }
-    Else {
+    else {
         Write-Warning -Message "`tERR: Failed to find BIS-F in: ${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)."
     }
 
 }
 #endregion
 
-# If (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
+# if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
 Write-Host "Complete: Bisf."
 #endregion

@@ -3,10 +3,10 @@
     .SYNOPSIS
         Install evergreen core applications.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\Apps\Adobe\AcrobatReaderDC",
 
@@ -30,7 +30,7 @@ New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue
 Write-Host "Adobe Acrobat Reader DC"
 $Reader = Get-EvergreenApp -Name "AdobeAcrobatReaderDC" | Where-Object { $_.Language -eq $Language -and $_.Architecture -eq $Architecture } | `
     Select-Object -First 1
-If ($Reader) {
+if ($Reader) {
 
     # Download Adobe Acrobat Reader
     Write-Host "`tDownload Adobe Acrobat Reader DC: $($Reader.Version)."
@@ -66,10 +66,10 @@ If ($Reader) {
     $Executables = "$env:ProgramFiles\Adobe\Acrobat DC\Acrobat\Acrobat.exe", `
         "${env:ProgramFiles(x86)}\Adobe\Acrobat DC\Acrobat\Acrobat.exe", `
         "${env:ProgramFiles(x86)}\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe"
-    If (Test-Path -Path $Executables) {
+    if (Test-Path -Path $Executables) {
 
         # Update
-        If ([System.Version]$Updater.Version -gt [System.Version]$Reader.Version) {
+        if ([System.Version]$Updater.Version -gt [System.Version]$Reader.Version) {
             $UpdateOutFile = Save-EvergreenApp -InputObject $Updater -Path $Path -WarningAction "SilentlyContinue"
 
             # Update Adobe Acrobat Reader
@@ -99,14 +99,14 @@ If ($Reader) {
             Write-Warning -Message "`tERR: $($_.Exception.Message)."
         }
     }
-    Else {
+    else {
         Write-Warning -Message "`tERR: Cannot find Adobe Acrobat Reader install"
     }
 }
-Else {
+else {
     Write-Warning -Message "`tERR: Failed to retrieve Adobe Acrobat Reader"
 }
 
-# If (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
+# if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
 Write-Host "Complete: Adobe Acrobat Reader DC."
 #endregion

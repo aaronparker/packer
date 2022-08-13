@@ -3,9 +3,9 @@
         Pushes commits back to GitHub
         Uses environment variables created inside the Azure DevOps environment
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter(Position = 0)]
     [System.String] $GitHubKey
 )
@@ -15,7 +15,7 @@ Write-Host "##vso[task.setvariable variable=GitHubKey]$GitHubKey"
 
 
 #region Functions
-Function Invoke-Process {
+function Invoke-Process {
     <#PSScriptInfo
         .VERSION 1.4
         .GUID b787dc5d-8d11-45e9-aeef-5cf3a1f690de

@@ -3,15 +3,15 @@
         Install line-of-business applications from an Azure storage account
         Assumes applications are installed via the PSAppDeployToolkit
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\Apps"
 )
 
 #region Functions
-Function Get-AzureBlobItem {
+function Get-AzureBlobItem {
     <#
         .SYNOPSIS
             Returns an array of items and properties from an Azure blog storage URL.
@@ -37,7 +37,7 @@ Function Get-AzureBlobItem {
     #>
     [CmdletBinding(SupportsShouldProcess = $False)]
     [OutputType([System.Management.Automation.PSObject])]
-    Param (
+    param (
         [Parameter(ValueFromPipeline = $True, Mandatory = $True, HelpMessage = "Azure blob storage URL with List Containers request URI '?comp=list'.")]
         [ValidatePattern("^(http|https)://")]
         [System.String] $Uri
@@ -61,12 +61,12 @@ Function Get-AzureBlobItem {
             Write-Warning -Message "$($MyInvocation.MyCommand): failed to download: $Uri."
             $_.Exception.Message
         }
-        If ($Null -ne $list) {
+        if ($Null -ne $list) {
             [System.Xml.XmlDocument] $xml = $list.Content.Substring($list.Content.IndexOf("<?xml", 0))
 
             # Build an object with file properties to return on the pipeline
             $fileList = New-Object -TypeName System.Collections.ArrayList
-            ForEach ($node in (Select-Xml -XPath "//Blobs/Blob" -Xml $xml).Node) {
+            foreach ($node in (Select-Xml -XPath "//Blobs/Blob" -Xml $xml).Node) {
                 $PSObject = [PSCustomObject] @{
                     Name         = ($node | Select-Object -ExpandProperty Name)
                     Url          = ($node | Select-Object -ExpandProperty Url)
@@ -75,7 +75,7 @@ Function Get-AzureBlobItem {
                 }
                 $fileList.Add($PSObject) > $Null
             }
-            If ($Null -ne $fileList) {
+            if ($Null -ne $fileList) {
                 Write-Output -InputObject $fileList
             }
         }
@@ -83,7 +83,7 @@ Function Get-AzureBlobItem {
     end {}
 }
 
-Function Install-LobApp ($Path, $AppsUrl) {
+function Install-LobApp ($Path, $AppsUrl) {
     # Get the list of items from blob storage
     try {
         $Items = Get-AzureBlobItem -Uri "$($AppsUrl)?comp=list" | Where-Object { $_.Name -match "zip?" }
@@ -93,10 +93,10 @@ Function Install-LobApp ($Path, $AppsUrl) {
         Write-Warning -Message " ERR: Failed to retrieve items from: [$AppsUrl]."
     }
 
-    ForEach ($item in $Items) {
+    foreach ($item in $Items) {
         $AppName = $item.Name -replace ".zip"
         $AppPath = Join-Path -Path $Path -ChildPath $AppName
-        If (!(Test-Path $AppPath)) { New-Item -Path $AppPath -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
+        if (!(Test-Path $AppPath)) { New-Item -Path $AppPath -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
         try {
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -127,7 +127,7 @@ $ProgressPreference = "SilentlyContinue"
 New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
 
 # Run tasks
-If (Test-Path -Path env:AppsUrl) {
+if (Test-Path -Path env:AppsUrl) {
     Install-LobApp -Path $Path -AppsUrl $env:AppsUrl
 }
 Write-Host " Complete: LoBApps."

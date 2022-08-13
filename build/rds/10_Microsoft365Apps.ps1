@@ -3,9 +3,9 @@
     .SYNOPSIS
         Install evergreen core applications.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter(Mandatory = $False)]
     [System.String] $LogPath = "$env:SystemRoot\Logs\M365Apps",
 
@@ -86,14 +86,13 @@ $OfficeXml = @"
         <User Key="software\microsoft\office\16.0\word\options" Name="defaultformat" Value="" Type="REG_SZ" App="word16" Id="L_SaveWordfilesas" />
     </AppSettings>
     <Display Level="None" AcceptEULA="TRUE" />
-    <Logging Level="Standard" Path="$LogPath" />
 </Configuration>
 "@
 
 # Get Office version
 Write-Host "Microsoft 365 Apps: $Channel"
 $App = Get-EvergreenApp -Name "Microsoft365Apps" | Where-Object { $_.Channel -eq $Channel } | Select-Object -First 1
-If ($App) {
+if ($App) {
 
     # Download setup.exe
     $OutFile = Save-EvergreenApp -InputObject $App -Path $Path -WarningAction "SilentlyContinue"
@@ -120,10 +119,10 @@ If ($App) {
         Write-Warning -Message "`tERR: Failed to install Microsoft 365 Apps with: $($Result.ExitCode)."
     }
 }
-Else {
+else {
     Write-Host "`tFailed to retrieve Microsoft 365 Apps setup."
 }
 
-# # If (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
+# # if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
 Write-Host "Complete: Microsoft 365 Apps."
 #endregion

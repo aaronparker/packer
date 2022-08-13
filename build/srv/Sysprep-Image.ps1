@@ -2,23 +2,23 @@
     .SYNOPSIS
         Sysprep image.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\Apps"
 )
 
 #region Functions
-Function Get-InstalledApplication () {
+function Get-InstalledApplication () {
     $RegPath = @("HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*")
-    If (-not ([System.IntPtr]::Size -eq 4)) {
+    if (-not ([System.IntPtr]::Size -eq 4)) {
         $RegPath += @("HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*")
     }
     try {
         $propertyNames = "DisplayName", "DisplayVersion", "Publisher", "UninstallString", "SystemComponent"
         $Apps = Get-ItemProperty -Path $RegPath -Name $propertyNames -ErrorAction "SilentlyContinue" | `
-            . { process { If ($_.DisplayName) { $_ } } } | `
+            . { process { if ($_.DisplayName) { $_ } } } | `
             Where-Object { $_.SystemComponent -ne 1 } | `
             Select-Object -Property "DisplayName", "DisplayVersion", "Publisher", "UninstallString", "PSPath" | `
             Sort-Object -Property "DisplayName"
@@ -41,7 +41,7 @@ reg delete HKLM\Software\Policies\Microsoft\WindowsStore /v AutoDownload /f
 
 # Remove C:\Apps folder
 try {
-    If (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Force }
+    if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Force }
 }
 catch {
     Write-Warning "Failed to remove $Path with: $($_.Exception.Message)."
@@ -49,17 +49,17 @@ catch {
 
 # Determine whether the Citrix Virtual Desktop Agent is installed
 $CitrixVDA = Get-InstalledApplication | Where-Object { $_.DisplayName -like "*Machine Identity Service Agent*" }
-If ($Null -ne $CitrixVDA) {
+if ($Null -ne $CitrixVDA) {
     Write-Host " Citrix Virtual Desktop agent detected, skipping Sysprep."
 }
-Else {
+else {
 
     # Sysprep
     #region Prepare
     Write-Host " Run Sysprep"
-    If (Get-Service -Name "RdAgent" -ErrorAction "SilentlyContinue") { Set-Service -Name "RdAgent" -StartupType "Disabled" }
-    If (Get-Service -Name "WindowsAzureTelemetryService" -ErrorAction "SilentlyContinue") { Set-Service -Name "WindowsAzureTelemetryService" -StartupType "Disabled" }
-    If (Get-Service -Name "WindowsAzureGuestAgent" -ErrorAction "SilentlyContinue") { Set-Service -Name "WindowsAzureGuestAgent" -StartupType "Disabled" }
+    if (Get-Service -Name "RdAgent" -ErrorAction "SilentlyContinue") { Set-Service -Name "RdAgent" -StartupType "Disabled" }
+    if (Get-Service -Name "WindowsAzureTelemetryService" -ErrorAction "SilentlyContinue") { Set-Service -Name "WindowsAzureTelemetryService" -StartupType "Disabled" }
+    if (Get-Service -Name "WindowsAzureGuestAgent" -ErrorAction "SilentlyContinue") { Set-Service -Name "WindowsAzureGuestAgent" -StartupType "Disabled" }
     Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\SysPrepExternal\\Generalize' -Name '*'
     #endregion
 
@@ -68,12 +68,12 @@ Else {
     & $env:SystemRoot\System32\Sysprep\Sysprep.exe /oobe /generalize /quiet /quit
     While ($True) {
         $imageState = Get-ItemProperty $RegPath | Select-Object ImageState
-        If ($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') {
+        if ($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') {
             Write-Output $imageState.ImageState
             Start-Sleep -s 10
         }
-        Else {
-            Break
+        else {
+            break
         }
     }
     $imageState = Get-ItemProperty $RegPath | Select-Object -Property "ImageState"

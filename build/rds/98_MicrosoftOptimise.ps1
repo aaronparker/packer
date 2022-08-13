@@ -2,16 +2,16 @@
     .SYNOPSIS
         Optimise and seal a Windows image.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
 [CmdletBinding()]
-Param (
+param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\Apps\Microsoft\Optimise"
 )
 
 #region Individual optimisation functions
-Function Invoke-WindowsDefender {
+function Invoke-WindowsDefender {
     # Run Windows Defender quick scan
     Write-Host "Running Windows Defender"
     Start-Process -FilePath "$env:ProgramFiles\Windows Defender\MpCmdRun.exe" -ArgumentList "-SignatureUpdate -MMPC" -Wait
@@ -19,7 +19,7 @@ Function Invoke-WindowsDefender {
     # Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\RemovalTools\MRT" -Name "GUID" -Value ""
 }
 
-Function Disable-ScheduledTask {
+function Disable-ScheduledTask {
     <#
         - NOTE:           Original script details here:
         - TITLE:          Microsoft Windows 1909  VDI/WVD Optimization Script
@@ -59,7 +59,7 @@ Function Disable-ScheduledTask {
         "ProcessMemoryDiagnosticEvents", "Proxy", "QueueReporting", "RecommendedTroubleshootingScanner",
         "RegIdleBackup", "RunFullMemoryDiagnostic", "ScheduledDefrag", "Scheduled", "ScheduledDefrag",
         "SR", "StartupAppTask", "SyspartRepair", "WindowsActionDialog", "WinSAT", "XblGameSaveTask")
-    If ($SchTasksList.count -gt 0) {
+    if ($SchTasksList.count -gt 0) {
         $EnabledScheduledTasks = Get-ScheduledTask | Where-Object { $_.State -ne "Disabled" }
         Foreach ($Item in $SchTasksList) {
             $Task = (($Item -split ":")[0]).Trim()
@@ -69,7 +69,7 @@ Function Disable-ScheduledTask {
     #endregion
 }
 
-Function Disable-WindowsTrace {
+function Disable-WindowsTrace {
     #region Disable Windows Traces
     Write-Host "Disabling Windows traces."
     $DisableAutologgers = @(
@@ -81,7 +81,7 @@ Function Disable-WindowsTrace {
         "HKLM:\SYSTEM\CurrentControlSet\Control\WMI\Autologger\WiFiDriverIHVSession\",
         "HKLM:\SYSTEM\CurrentControlSet\Control\WMI\Autologger\WiFiSession\",
         "HKLM:\SYSTEM\CurrentControlSet\Control\WMI\Autologger\WinPhoneCritical\")
-    If ($DisableAutologgers.count -gt 0) {
+    if ($DisableAutologgers.count -gt 0) {
         Foreach ($Item in $DisableAutologgers) {
             New-ItemProperty -Path "$Item" -Name "Start" -PropertyType "DWORD" -Value "0" -Force -ErrorAction "SilentlyContinue"
         }
@@ -89,7 +89,7 @@ Function Disable-WindowsTrace {
     #endregion
 }
 
-Function Disable-Service {
+function Disable-Service {
     #region Disable Services
     #################### BEGIN: DISABLE SERVICES section ###########################
     Write-Host "Disabling services."
@@ -98,7 +98,7 @@ Function Disable-Service {
         "MessagingService", "OneSyncSvc", "PimIndexMaintenanceSvc", "Power", "SEMgrSvc", "SmsRouter",
         "SysMain", "TabletInputService", "UsoSvc", "WerSvc", "XblAuthManager",
         "XblGameSave", "XboxGipSvc", "XboxNetApiSvc", "AdobeARMservice")
-    If ($ServicesToDisable.count -gt 0) {
+    if ($ServicesToDisable.count -gt 0) {
         Foreach ($Item in $ServicesToDisable) {
             $service = Get-Service -Name $Item -ErrorAction "SilentlyContinue"
             Write-Host "Disabling service: $($service.DisplayName)."
@@ -108,11 +108,11 @@ Function Disable-Service {
     #endregion
 }
 
-Function Disable-SystemRestore {
+function Disable-SystemRestore {
     Disable-ComputerRestore -Drive "$($env:SystemDrive)\" -ErrorAction "SilentlyContinue"
 }
 
-Function Optimize-Network {
+function Optimize-Network {
     #region Network Optimization
     # LanManWorkstation optimizations
     Write-Host "Network optimisations."
@@ -132,7 +132,7 @@ Function Optimize-Network {
     #endregion
 }
 
-Function Invoke-Cleanmgr {
+function Invoke-Cleanmgr {
     #region Disk Cleanup
     # Disk Cleanup Wizard automation (Cleanmgr.exe /SAGESET:11)
     # If you prefer to skip a particular disk cleanup category, edit the "Win10_1909_DiskCleanRegSettings.txt"
@@ -161,7 +161,7 @@ Function Invoke-Cleanmgr {
         "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Windows Error Reporting Files\",
         #"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Windows ESD installation files\",
         "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Windows Upgrade Log Files\")
-    If ($DiskCleanupSettings.count -gt 0) {
+    if ($DiskCleanupSettings.count -gt 0) {
         Foreach ($Item in $DiskCleanupSettings) {
             New-ItemProperty -Path "$Item" -Name "StateFlags0011" -PropertyType "DWORD" -Value "2" -Force -ErrorAction "SilentlyContinue"
         }
@@ -171,7 +171,7 @@ Function Invoke-Cleanmgr {
     #endregion
 }
 
-Function Remove-TempFile {
+function Remove-TempFile {
     #region
     # ADDITIONAL DISK CLEANUP
     # Delete not in-use files in locations C:\Windows\Temp and %temp%
@@ -191,11 +191,11 @@ Function Remove-TempFile {
     #endregion
 }
 
-Function Global:Clear-WinEvent {
+function Global:Clear-WinEvent {
     [CmdletBinding(SupportsShouldProcess = $True)]
-    Param ([System.String] $LogName)
+    param ([System.String] $LogName)
     Process {
-        If ($PSCmdlet.ShouldProcess("$LogName", "Clear event log")) {
+        if ($PSCmdlet.ShouldProcess("$LogName", "Clear event log")) {
             try {
                 [System.Diagnostics.Eventing.Reader.EventLogSession]::GlobalSession.ClearLog("$LogName")
             }
@@ -208,7 +208,7 @@ Function Global:Clear-WinEvent {
 #endregion
 
 #region
-Function MicrosoftOptimizer {
+function MicrosoftOptimizer {
     # https://github.com/The-Virtual-Desktop-Team/Virtual-Desktop-Optimization-Tool
     $Url = "https://github.com/The-Virtual-Desktop-Team/Virtual-Desktop-Optimization-Tool/archive/master.zip"
     $Path = Join-Path -Path $Path -ChildPath "VirtualDesktopOptimizationTool"

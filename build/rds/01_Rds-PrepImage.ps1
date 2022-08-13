@@ -2,9 +2,9 @@
     .SYNOPSIS
         Preps a RDS/WVD image for customisation.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
-Param ()
+param ()
 
 # Ready image
 Write-Host " Disable Windows Defender real time scan"

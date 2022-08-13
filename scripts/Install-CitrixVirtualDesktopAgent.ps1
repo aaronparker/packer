@@ -7,19 +7,19 @@ Remove-MSIApplications -Name "Remote Desktop WebRTC Redirector Service"
 Switch -Regex ((Get-CimInstance -ClassName "CIM_OperatingSystem").Caption) {
     "Microsoft Windows Server*" {
         $FileName = "VDAServerSetup_2103.exe"
-        Break
+        break
     }
     "Microsoft Windows 1* Enterprise for Virtual Desktops" {
         $FileName = "VDAServerSetup_2103.exe"
-        Break
+        break
     }
     "Microsoft Windows 1* Enterprise" {
         $FileName = "VDAWorkstationSetup_2103.exe"
-        Break
+        break
     }
     "Microsoft Windows 1*" {
         $FileName = "VDAWorkstationSetup_2103.exe"
-        Break
+        break
     }
     Default {
         $FileName = "VDAWorkstationSetup_2103.exe"
