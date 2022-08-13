@@ -1,13 +1,13 @@
 name: build-windows11-templates
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - templates/rds/PackerTemplate-WindowsAzure.pkr.hcl
-      #- build/rds/**.ps1
-      #- build/rds/**.xml
+  #push:
+  #  branches:
+  #    - main
+  #  paths:
+  #    - templates/rds/PackerTemplate-WindowsAzure.pkr.hcl
+  #    #- build/rds/**.ps1
+  #    #- build/rds/**.xml
   workflow_dispatch:
 
 env:

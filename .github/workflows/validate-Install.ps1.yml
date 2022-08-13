@@ -1,0 +1,80 @@
+name: validate-Install.ps1
+
+on:
+  #push:
+  #  branches:
+  #    - main
+  #  paths:
+  #    - 'Install.ps1'
+  #    - 'tests/**'
+  #schedule:
+  #  - cron:  '0 10 * * 2'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install and cache PowerShell modules
+        id: psmodulecache
+        uses: potatoqualitee/psmodulecache@v4.5
+        with:
+          modules-to-cache: Pester, VcRedist, Evergreen
+          shell: powershell
+
+      # Run Install.ps1
+      - name: Run Install.ps1
+        id: runinstall
+        shell: powershell
+        run: |
+          . .\Install.ps1
+
+      # List installed software
+      - name: List installed software
+        id: getinstalledsoftware
+        shell: powershell
+        run: |
+          . .\ci\Get-Installed.ps1
+
+      # Run Pester tests
+      - name: Validate with Pester
+        id: validatepester
+        shell: powershell
+        run: |
+          . .\ci\Invoke-Tests.ps1
+
+  tag:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Import GPG key
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v5
+        with:
+          gpg_private_key: ${{ secrets.GPGKEY }}
+          passphrase: ${{ secrets.GPGPASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+          git_config_global: true
+          git_tag_gpgsign: true
+          git_push_gpgsign: false
+          git_committer_name: ${{ secrets.COMMIT_USER }}
+          git_committer_email: ${{ secrets.COMMIT_EMAIL }}
+
+      # Push tag
+      - name: Push tag
+        id: pushtag
+        shell: bash
+        run: |
+          DATEF=`date +%Y.%m.%d`
+          git tag -a "v$DATEF.$GITHUB_RUN_NUMBER" -m "Validate script v$DATEF.$GITHUB_RUN_NUMBER"
+          git push origin "v$DATEF.$GITHUB_RUN_NUMBER"
