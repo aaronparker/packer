@@ -76,29 +76,12 @@
                 "PackagesUrl={{user `packages_url`}}"
             ],
             "scripts": [
+                "build/rds/00_SupportFunctions.ps1",
                 "build/rds/01_Rds-PrepImage.ps1",
-                "build/common/02_Packages.ps1",
-                "build/common/03_RegionLanguage.ps1",
-                "build/rds/05_Rds-Roles.ps1"
-            ]
-        },
-        {
-            "type": "powershell",
-            "inline": [
-                "New-Item -Path \"C:\\Apps\\image-customise\" -ItemType \"Directory\" -Force -ErrorAction \"SilentlyContinue\" > $Null"
-            ]
-        },
-        {
-            "type": "file",
-            "direction": "upload",
-            "max_retries": 2,
-            "source": "{{user `working_directory`}}\\image-customise\\src\\",
-            "destination": "C:\\Apps\\image-customise"
-        },
-        {
-            "type": "powershell",
-            "scripts": [
-                "build/common/04_Customise.ps1"
+                "build/rds/02_Packages.ps1",
+                "build/rds/03_RegionLanguage.ps1",
+                "build/rds/04_Rds-Roles.ps1",
+                "build/rds/05_Customise.ps1"
             ]
         },
         {
@@ -114,7 +97,6 @@
         {
             "type": "powershell",
             "scripts": [
-                "build/common/06_SupportFunctions.ps1",
                 "build/rds/07_MicrosoftVcRedists.ps1",
                 "build/rds/08_MicrosoftFSLogixApps.ps1",
                 "build/rds/09_MicrosoftEdge.ps1",
@@ -174,7 +156,7 @@
             "scripts": [
                 "build/rds/98_CitrixOptimizer.ps1",
                 "build/rds/99_Bisf.ps1",
-                "build/common/Get-Installed.ps1"
+                "build/rds/Get-Installed.ps1"
             ]
         },
         {
@@ -190,7 +172,7 @@
         {
             "type": "powershell",
             "scripts": [
-                "build/common/Sysprep-Image.ps1"
+                "build/rds/Sysprep-Image.ps1"
             ]
         }
     ],
