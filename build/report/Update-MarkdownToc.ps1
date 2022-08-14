@@ -22,8 +22,8 @@ param (
 #$Path = [System.IO.Path]::Combine("/Users/aaron/Projects/packer/docs", "docs")
 #$OutFile = [System.IO.Path]::Combine("/Users/aaron/Projects/packer/docs", "docs", "index.md")
 
-Write-Host " Input: $Path."
-Write-Host " Output: $OutFile."
+Write-Host "Input: $Path."
+Write-Host "Output: $OutFile."
 
 # Start with a blank markdown variable
 Remove-Variable -Name "markdown" -ErrorAction "SilentlyContinue"
@@ -35,12 +35,12 @@ $params = @{
     Directory = $true
     Recurse   = $false
 }
-Write-Host " Get directory: $($Path)."
+Write-Host "Get directory: $($Path)."
 $Level1Directories = Get-ChildItem @params
 
 # There's a better way to do this, but this works for now
 foreach ($Level1Dir in $Level1Directories) {
-    Write-Host " Add header: $($Level1Dir.FullName)."
+    Write-Host "Add header: $($Level1Dir.FullName)."
     $markdown += New-MDHeader -Text $Level1Dir.BaseName -Level 1
     $markdown += "`n"
 
@@ -49,11 +49,11 @@ foreach ($Level1Dir in $Level1Directories) {
         Directory = $true
         Recurse   = $false
     }
-    Write-Host " Get directory: $($Level1Dir.FullName)."
+    Write-Host "Get directory: $($Level1Dir.FullName)."
     $Level2Directories = Get-ChildItem @params
 
     foreach ($Level2Dir in $Level2Directories) {
-        Write-Host " Add header: $($Level2Dir.FullName)."
+        Write-Host "Add header: $($Level2Dir.FullName)."
         $markdown += New-MDHeader -Text $Level2Dir.BaseName -Level 2
         $markdown += "`n"
 
@@ -62,11 +62,11 @@ foreach ($Level1Dir in $Level1Directories) {
             Directory = $true
             Recurse   = $false
         }
-        Write-Host " Get directory: $($Level2Dir.FullName)."
+        Write-Host "Get directory: $($Level2Dir.FullName)."
         $Level3Directories = Get-ChildItem @params
 
         foreach ($Level3Dir in $Level3Directories) {
-            Write-Host " Add header: $($Level3Dir.FullName)."
+            Write-Host "Add header: $($Level3Dir.FullName)."
             $markdown += New-MDHeader -Text $Level3Dir.BaseName -Level 3
             $markdown += "`n"
 
@@ -74,13 +74,13 @@ foreach ($Level1Dir in $Level1Directories) {
                 Path   = $Level3Dir.FullName
                 Filter = "*.md"
             }
-            Write-Host " Get reports: $($Level3Dir.FullName)."
+            Write-Host "Get reports: $($Level3Dir.FullName)."
             $Reports = Get-ChildItem @params
 
             foreach ($report in $Reports) {
 
                 # Create a link to the report, replacing \ if we're running on Windows
-                Write-Host " Add report: $($report.FullName)."
+                Write-Host "Add report: $($report.FullName)."
                 $params = @{
                     Text      = $report.BaseName
                     Link      = ($report.FullName -replace [Regex]::Escape($Path), "") -replace "\\", "/"
@@ -95,7 +95,7 @@ foreach ($Level1Dir in $Level1Directories) {
 
 # Write the markdown to a file
 try {
-    Write-Host " Writing markdown to: $OutFile."
+    Write-Host "Writing markdown to: $OutFile."
     ($markdown.TrimEnd("`n")) | Out-File -FilePath $OutFile -Encoding "Utf8" -NoNewLine -Force
 }
 catch {

@@ -130,10 +130,10 @@ $Latest = [PSCustomObject]@{
 }
 
 if ($Null -ne $Latest) {
-    Write-Host " Found version: $($Latest.Version)."
+    Write-Host "Found version: $($Latest.Version)."
     $OutFile = Join-Path -Path $([System.IO.Path]::GetTempPath()) -ChildPath (Split-Path -Path $Latest.URI -Leaf)
 
-    Write-Host " Downloading Windows Update Packer plugin." -ForegroundColor "Cyan"
+    Write-Host "Downloading Windows Update Packer plugin." -ForegroundColor "Cyan"
     try {
         $ProgressPreference = "SilentlyContinue"
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12

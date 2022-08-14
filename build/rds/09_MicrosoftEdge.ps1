@@ -24,11 +24,11 @@ $App = Get-EvergreenApp -Name "MicrosoftEdge" | Where-Object { $_.Architecture -
 if ($App) {
 
     # Download
-    Write-Host "`tMicrosoft Edge: $($App.Version)."
-    $OutFile = Save-EvergreenApp -InputObject $App -Path $Path -WarningAction "SilentlyContinue"
+    Write-Host "Microsoft Edge: $($App.Version)."
+    $OutFile = Save-EvergreenApp -InputObject $App -CustomPath $Path -WarningAction "SilentlyContinue"
 
     # Install
-    Write-Host "`tInstalling Microsoft Edge"
+    Write-Host "Installing Microsoft Edge"
     try {
         $params = @{
             FilePath     = "$env:SystemRoot\System32\msiexec.exe"
@@ -45,7 +45,7 @@ if ($App) {
     }
 
     # Post install configuration
-    Write-Host "`tPost-install config"
+    Write-Host "Post-install config"
     $prefs = @{
         "homepage"               = "https://www.office.com"
         "homepage_is_newtabpage" = $False

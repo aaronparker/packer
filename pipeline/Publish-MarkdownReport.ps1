@@ -32,11 +32,11 @@ param (
 #$OutFile = [System.IO.Path]::Combine("/Users/aaron/Projects/packer/docs", "docs", "index.md")
 
 # Output variable values
-Write-Host " Path:              $Path."
-Write-Host " ImagePublisher:    $ImagePublisher."
-Write-Host " ImageOffer:        $ImageOffer."
-Write-Host " ImageSku:          $ImageSku."
-Write-Host " DestinationPath:   $ImagePublisher."
+Write-Host "Path:              $Path."
+Write-Host "ImagePublisher:    $ImagePublisher."
+Write-Host "ImageOffer:        $ImageOffer."
+Write-Host "ImageSku:          $ImageSku."
+Write-Host "DestinationPath:   $ImagePublisher."
 
 # Start with a markdown variable
 [System.String] $markdown += New-MDHeader -Text $version -Level 1 -NoNewLine
@@ -46,7 +46,7 @@ $markdown += "`n`n"
 [System.Array] $InputFile = Get-ChildItem -Path $Path -Filter "*.json" | Sort-Object -Descending
 foreach ($file in $InputFile) {
     try {
-        Write-Host " Reading: $($file.FullName)."
+        Write-Host "Reading: $($file.FullName)."
         $table = Get-Content -Path $file.FullName | ConvertFrom-Json
     }
     catch {
@@ -74,7 +74,7 @@ catch {
 # Write the markdown to a file
 try {
     $OutFile = Join-Path -Path $TargetPath -ChildPath "$Version.md"
-    Write-Host " Writing markdown to: $OutFile."
+    Write-Host "Writing markdown to: $OutFile."
     ($markdown.TrimEnd("`n")) | Out-File -FilePath $OutFile -Encoding "Utf8" -NoNewline -Force
 }
 catch {

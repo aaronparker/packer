@@ -207,9 +207,9 @@ if (Test-Path -Path env:Locale) {
     $Locale = $env:Locale
 }
 else {
-    Write-Host " Can't find passed parameter, setting Locale to en-AU."
+    Write-Host "Can't find passed parameter, setting Locale to en-AU."
     $Locale = "en-AU"
 }
 Set-RegionSetting -Path $Path -Locale $Locale
 #Install-LanguageCapability -Locale $Locale
-Write-Host " Complete: RegionLanguage."
+Write-Host "Complete: RegionLanguage."

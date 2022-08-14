@@ -75,28 +75,28 @@ function Get-InstalledSoftware {
 
 #region Output details of the image to JSON files that Packer can upload back to the runner
 # Get the Software list; Output the installed software to the pipeline for Packer output
-Write-Host " Export software list to: $SoftwareFile."
+Write-Host "Export software list to: $SoftwareFile."
 $software = Get-InstalledSoftware | Sort-Object -Property "Publisher", "Version"
 $software | ConvertTo-Json | Out-File -FilePath $SoftwareFile -Force -Encoding "Utf8"
 
 # Get the installed packages
-Write-Host " Export packages list to: $PackagesFile."
+Write-Host "Export packages list to: $PackagesFile."
 $packages = Get-ProvisionedAppPackage -Online | Select-Object -Property "DisplayName", "Version"
 if ($Null -ne $packages) { $packages | ConvertTo-Json | Out-File -FilePath $PackagesFile -Force -Encoding "Utf8" }
 
 # Get the installed hotfixes
-Write-Host " Export hotfix list to: $HotfixFile."
+Write-Host "Export hotfix list to: $HotfixFile."
 $hotfixes = Get-Hotfix | Select-Object -Property "Description", "HotFixID", "Caption" | Sort-Object -Property "HotFixID"
 $hotfixes | ConvertTo-Json | Out-File -FilePath $HotfixFile -Force -Encoding "Utf8"
 
 # Get installed features
-Write-Host " Export features list to: $FeaturesFile."
+Write-Host "Export features list to: $FeaturesFile."
 $features = Get-WindowsOptionalFeature -Online | Where-Object { $_.State -eq "Enabled" } | `
     Select-Object -Property "FeatureName", "State" | Sort-Object -Property "FeatureName" -Descending
 $features | ConvertTo-Json | Out-File -FilePath $FeaturesFile -Force -Encoding "Utf8"
 
 # Get installed capabilities
-Write-Host " Export capabilities list to: $CapabilitiesFile."
+Write-Host "Export capabilities list to: $CapabilitiesFile."
 $capabilities = Get-WindowsCapability -Online | Where-Object { $_.State -eq "Installed" } | `
     Select-Object -Property "Name", "State" | Sort-Object -Property "Name" -Descending
 $capabilities | ConvertTo-Json | Out-File -FilePath $CapabilitiesFile -Force -Encoding "Utf8"

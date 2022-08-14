@@ -95,11 +95,11 @@ $App = Get-EvergreenApp -Name "Microsoft365Apps" | Where-Object { $_.Channel -eq
 if ($App) {
 
     # Download setup.exe
-    $OutFile = Save-EvergreenApp -InputObject $App -Path $Path -WarningAction "SilentlyContinue"
+    $OutFile = Save-EvergreenApp -InputObject $App -CustomPath $Path -WarningAction "SilentlyContinue"
 
     try {
         # Download Office package, Setup fails to exit, so wait 9-10 mins for Office install to complete
-        Write-Host "`tInstalling Microsoft 365 Apps: $($App.Version)."
+        Write-Host "Installing Microsoft 365 Apps: $($App.Version)."
         $XmlFile = Join-Path -Path $Path -ChildPath "Office.xml"
         Out-File -FilePath $XmlFile -InputObject $OfficeXml -Encoding "utf8"
 
@@ -120,7 +120,7 @@ if ($App) {
     }
 }
 else {
-    Write-Host "`tFailed to retrieve Microsoft 365 Apps setup."
+    Write-Host "Failed to retrieve Microsoft 365 Apps setup."
 }
 
 # # if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }

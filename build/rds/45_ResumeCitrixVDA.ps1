@@ -23,13 +23,13 @@ if (Test-Path -Path $FilePath) {
     }
     catch {
         if ($process.ExitCode -ne 0) {
-            Write-Host "`tErr: Citrix VDA Setup exited with: $($process.ExitCode)."
+            Write-Host "Err: Citrix VDA Setup exited with: $($process.ExitCode)."
         }
         else {
-            Write-Host "`tCitrix VDA Setup exited with: $($process.ExitCode)."
+            Write-Host "Citrix VDA Setup exited with: $($process.ExitCode)."
         }
     }
-    Write-Host "`tCitrix VDA resume complete with: $($process.ExitCode)."
+    Write-Host "Citrix VDA resume complete with: $($process.ExitCode)."
 }
 else {
     Write-Host "Citrix VDA not found. Skipping resume."

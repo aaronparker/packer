@@ -29,12 +29,12 @@ $App = Get-EvergreenApp -Name "MicrosoftWvdRtcService" | Where-Object { $_.Archi
 if ($App) {
 
     # Download
-    Write-Host "`tDownloading Microsoft Remote Desktop WebRTC Redirector Service"
-    $OutFile = Save-EvergreenApp -InputObject $App -Path $Path -WarningAction "SilentlyContinue"
+    Write-Host "Downloading Microsoft Remote Desktop WebRTC Redirector Service"
+    $OutFile = Save-EvergreenApp -InputObject $App -CustomPath $Path -WarningAction "SilentlyContinue"
 
     # Install RTC
     try {
-        Write-Host "`tInstalling Microsoft Remote Desktop WebRTC Redirector Service: $($App.Version)."
+        Write-Host "Installing Microsoft Remote Desktop WebRTC Redirector Service: $($App.Version)."
         $params = @{
             FilePath     = "$env:SystemRoot\System32\msiexec.exe"
             ArgumentList = "/package $($OutFile.FullName) ALLUSERS=1 /quiet /Log $LogPath"
@@ -55,17 +55,17 @@ else {
 #endregion
 
 #region Boot Loader
-Write-Host "`tMicrosoft Windows Virtual Desktop Agent Bootloader"
+Write-Host "Microsoft Windows Virtual Desktop Agent Bootloader"
 $App = Get-EvergreenApp -Name "MicrosoftWvdBootLoader" | Where-Object { $_.Architecture -eq "x64"} | Select-Object -First 1
 if ($App) {
     if (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
     # Download
-    Write-Host "`tDownloading Microsoft Windows Virtual Desktop Agent Bootloader"
+    Write-Host "Downloading Microsoft Windows Virtual Desktop Agent Bootloader"
     $OutFile = Save-EvergreenApp -InputObject $App -Path $Path -WarningAction "SilentlyContinue"
 
     # Install
-    Write-Host "`tInstalling Microsoft Windows Virtual Desktop Agent Bootloader: $($App.Version)."
+    Write-Host "Installing Microsoft Windows Virtual Desktop Agent Bootloader: $($App.Version)."
     try {
         $params = @{
             FilePath     = "$env:SystemRoot\System32\msiexec.exe"
@@ -87,17 +87,17 @@ else {
 #endregion
 
 #region Infra agent
-Write-Host "`tMicrosoft WVD Infrastructure Agent"
+Write-Host "Microsoft WVD Infrastructure Agent"
 $App = Get-EvergreenApp -Name "MicrosoftWvdInfraAgent" | Where-Object { $_.Architecture -eq "x64"}
 if ($App) {
 
     # Download
-    Write-Host "`tDownloading Microsoft WVD Infrastructure Agent: $($App.Version)."
+    Write-Host "Downloading Microsoft WVD Infrastructure Agent: $($App.Version)."
     $OutFile = Save-EvergreenApp -InputObject $App -Path $Path -WarningAction "SilentlyContinue"
 
     # Install
     <#
-    Write-Host " Installing Microsoft WVD Infrastructure Agent"
+    Write-Host "Installing Microsoft WVD Infrastructure Agent"
     try {
         $params = @{
             FilePath     = "$env:SystemRoot\System32\msiexec.exe"
@@ -112,7 +112,7 @@ if ($App) {
     catch {
         Write-Warning -Message "`tERR: Failed to install Microsoft WVD Infrastructure Agent."
     }
-    Write-Host " Done"
+    Write-Host "Done"
     #>
 }
 else {

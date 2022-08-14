@@ -80,4 +80,4 @@ switch -Regex ((Get-CimInstance -ClassName "CIM_OperatingSystem").Caption) {
     }
 }
 
-Write-Host " Complete: Roles."
+Write-Host "Complete: Roles."

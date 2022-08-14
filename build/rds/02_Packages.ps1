@@ -134,19 +134,19 @@ function Install-ImagePackage ($Path, $PackagesUrl) {
         $AppPath = Join-Path -Path $Path -ChildPath $AppName
         if (!(Test-Path $AppPath)) { New-Item -Path $AppPath -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
-        Write-Host " Downloading item: [$($item.Url)]."
+        Write-Host "Downloading item: [$($item.Url)]."
         $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $item.Url -Leaf)
         try {
             Invoke-WebRequest -Uri $item.Url -OutFile $OutFile -UseBasicParsing
         }
         catch {
-            Write-Host " Failed to download: $($item.Url)."
+            Write-Host "Failed to download: $($item.Url)."
             break
         }
         Expand-Archive -Path $OutFile -DestinationPath $AppPath -Force
         Remove-Item -Path $OutFile -Force -ErrorAction SilentlyContinue
 
-        Write-Host " Installing item: $($AppName)."
+        Write-Host "Installing item: $($AppName)."
         Push-Location $AppPath
         Get-ChildItem -Path $AppPath -Recurse | Unblock-File
         . .\Install.ps1
@@ -165,4 +165,4 @@ New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue
 
 # Run tasks
 Install-ImagePackage -Path $Path -PackagesUrl $Env:PackagesUrl
-Write-Host " Complete: Packages."
+Write-Host "Complete: Packages."

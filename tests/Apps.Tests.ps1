@@ -41,7 +41,7 @@ Describe -Name "Validate installed <App.Name>" -ForEach $Applications {
             catch {
                 throw $_.Exception.Message
             }
-        
+
             $UninstallKeys = @(
                 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*",
                 "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*"
@@ -49,7 +49,7 @@ Describe -Name "Validate installed <App.Name>" -ForEach $Applications {
             $UninstallKeys += Get-ChildItem -Path "HKU:" | Where-Object { $_.Name -match "S-\d-\d+-(\d+-){1,14}\d+$" } | ForEach-Object {
                 "HKU:\$($_.PSChildName)\Software\Microsoft\Windows\CurrentVersion\Uninstall\*"
             }
-            
+
             $Apps = @()
             foreach ($Key in $UninstallKeys) {
                 try {
@@ -64,10 +64,10 @@ Describe -Name "Validate installed <App.Name>" -ForEach $Applications {
                     throw $_.Exception.Message
                 }
             }
-        
+
             Remove-PSDrive -Name "HKU" -ErrorAction "SilentlyContinue" | Out-Null
             return $Apps
-        }        
+        }
         #endregion
 
         # Get the Software list; Output the installed software to the pipeline for Packer output

@@ -7,11 +7,11 @@
 param ()
 
 # Ready image
-Write-Host " Disable Windows Defender real time scan"
+Write-Host "Disable Windows Defender real time scan"
 Set-MpPreference -DisableRealtimeMonitoring $true
 
-Write-Host " Disable Windows Store updates"
+Write-Host "Disable Windows Store updates"
 REG add HKLM\Software\Policies\Microsoft\Windows\CloudContent /v "DisableWindowsConsumerFeatures" /d 1 /t "REG_DWORD" /f
 REG add HKLM\Software\Policies\Microsoft\WindowsStore /v "AutoDownload" /d 2 /t "REG_DWORD" /f
 
-Write-Host " Complete: PrepImage."
+Write-Host "Complete: PrepImage."

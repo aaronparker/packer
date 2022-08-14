@@ -7,14 +7,11 @@
 [CmdletBinding()]
 param (
     [Parameter(Mandatory = $False)]
-    [System.String] $Path = "$env:SystemDrive\Apps\image-customise",
-
-    [Parameter(Mandatory = $False)]
-    [System.String] $InvokeScript = "Install-Defaults.ps1"
+    [System.String] $Path = "$env:SystemDrive\Apps\image-customise"
 )
 
 #region Script logic
-Write-Host " Start: Customise."
+Write-Host "Start: Customise."
 New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
 try {
     $Installer = Get-EvergreenApp -Name "stealthpuppyWindowsCustomisedDefaults" | Where-Object { $_.Type -eq "zip" } | `
@@ -22,12 +19,14 @@ try {
         Save-EvergreenApp -CustomPath $Path
     Expand-Archive -Path $Installer.FullName -DestinationPath $Path -Force
     Push-Location -Path $Path
-    .\$InvokeScript
-    Pop-Location
+    .\Install-Defaults.ps1
 }
 catch {
     Write-Warning -Message " ERR: $($Script.FullName) error with: $($_.Exception.Message)."
 }
+finally {
+    Pop-Location
+}
 
-Write-Host " Complete: Customise."
+Write-Host "Complete: Customise."
 #endregion

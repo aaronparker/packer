@@ -18,7 +18,7 @@ $ProgressPreference = "SilentlyContinue"
 #region BIS-F
 New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
 Write-Host "BISF"
-Write-Host "`tUsing path: $Path."
+Write-Host "Using path: $Path."
 
 $App = Get-EvergreenApp -Name "BISF"
 if ($App) {
@@ -28,7 +28,7 @@ if ($App) {
 
     # Install BIS-F
     try {
-        Write-Host "`tFound MSI file: $($OutFile.FullName)."
+        Write-Host "Found MSI file: $($OutFile.FullName)."
         $params = @{
             FilePath     = "$env:SystemRoot\System32\msiexec.exe"
             ArgumentList = "/i $($OutFile.FullName) ALLUSERS=1 /quiet"
@@ -48,7 +48,7 @@ if ($App) {
     if (Test-Path -Path $BisfInstall -ErrorAction "SilentlyContinue") {
 
         # Remove Start menu shortcut if it exists
-        Write-Host "`tRemove BIS-F Start menu shortcut."
+        Write-Host "Remove BIS-F Start menu shortcut."
         $params = @{
             Path        = "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Base Image Script Framework (BIS-F).lnk"
             Force       = $True
@@ -59,7 +59,7 @@ if ($App) {
 
         # Copy BIS-F config files
         try {
-            Write-Host "`tCopy BIS-F configuration files from: $Path to $BisfInstall."
+            Write-Host "Copy BIS-F configuration files from: $Path to $BisfInstall."
             Switch -Regex ((Get-CimInstance -ClassName "CIM_OperatingSystem").Caption) {
                 "Microsoft Windows Server*" {
                     $Config = "BISFconfig_MicrosoftWindowsServer2019Standard_64-bit.json"
@@ -78,7 +78,7 @@ if ($App) {
                 Verbose     = $True
                 ErrorAction = "SilentlyContinue"
             }
-            Write-Host "`tCopy BIS-F configuration file: $($ConfigFile.FullName)."
+            Write-Host "Copy BIS-F configuration file: $($ConfigFile.FullName)."
             Copy-Item @params
         }
         catch {
@@ -97,7 +97,7 @@ if ($App) {
                 Verbose     = $True
                 ErrorAction = "SilentlyContinue"
             }
-            Write-Host "`tSet BIS-F shared configuration file: BISFSharedConfig.json."
+            Write-Host "Set BIS-F shared configuration file: BISFSharedConfig.json."
             $json | ConvertTo-Json | Out-File @params
         }
         catch {
@@ -105,7 +105,7 @@ if ($App) {
         }
 
         # Run BIS-F
-        Write-Host "`tRun BIS-F."
+        Write-Host "Run BIS-F."
         try {
             Push-Location -Path (Join-Path -Path $BisfInstall -ChildPath "Framework")
             & "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)\Framework\PrepBISF_Start.ps1" -Verbose:$False

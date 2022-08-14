@@ -215,9 +215,11 @@ build {
                         "build/rds/01_Rds-PrepImage.ps1",
                         "build/rds/02_Packages.ps1",
                         "build/rds/03_RegionLanguage.ps1",
-                        "build/rds/04_Customise.ps1"
-                        "build/rds/05_Rds-Roles.ps1"]
+                        "build/rds/04_Rds-Roles.ps1",
+                        "build/rds/05_Customise.ps1",]
   }
+
+  provisioner "windows-restart" {}
 
   provisioner "windows-update" {
     filters         = ["exclude:$_.Title -like '*Silverlight*'", "exclude:$_.Title -like '*Preview*'", "include:$true"]

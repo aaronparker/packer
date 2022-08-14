@@ -19,11 +19,11 @@ $ProgressPreference = "SilentlyContinue"
 Write-Host "Microsoft Visual C++ Redistributables"
 New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
 
-Write-Host "`tDownloading Microsoft Visual C++ Redistributables"
+Write-Host "Downloading Microsoft Visual C++ Redistributables"
 Save-VcRedist -VcList (Get-VcList) -Path $Path > $Null
 
-Write-Host "`tInstalling Microsoft Visual C++ Redistributables"
-$Installed = Install-VcRedist -VcList (Get-VcList) -Path $Path -Silent -Verbose | Out-Null
+Write-Host "Installing Microsoft Visual C++ Redistributables"
+$Installed = Install-VcRedist -VcList (Get-VcList) -Path $Path -Silent | Out-Null
 
 # if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
 Write-Host "Complete: VcRedists."

@@ -1,4 +1,5 @@
 function Get-InstalledSoftware {
+    [OutputType([System.Management.Automation.PSObject])]
     [CmdletBinding()]
     param ()
     try {
@@ -21,7 +22,7 @@ function Get-InstalledSoftware {
     $UninstallKeys += Get-ChildItem -Path "HKU:" | Where-Object { $_.Name -match "S-\d-\d+-(\d+-){1,14}\d+$" } | ForEach-Object {
         "HKU:\$($_.PSChildName)\Software\Microsoft\Windows\CurrentVersion\Uninstall\*"
     }
-    
+
     $Apps = @()
     foreach ($Key in $UninstallKeys) {
         try {
@@ -38,5 +39,5 @@ function Get-InstalledSoftware {
     }
 
     Remove-PSDrive -Name "HKU" -ErrorAction "SilentlyContinue" | Out-Null
-    return $Apps
+    Write-Output -InputObject $Apps
 }

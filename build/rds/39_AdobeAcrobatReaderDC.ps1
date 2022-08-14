@@ -33,12 +33,12 @@ $Reader = Get-EvergreenApp -Name "AdobeAcrobatReaderDC" | Where-Object { $_.Lang
 if ($Reader) {
 
     # Download Adobe Acrobat Reader
-    Write-Host "`tDownload Adobe Acrobat Reader DC: $($Reader.Version)."
-    $OutFile = Save-EvergreenApp -InputObject $Reader -Path $Path -WarningAction "SilentlyContinue"
+    Write-Host "Download Adobe Acrobat Reader DC: $($Reader.Version)."
+    $OutFile = Save-EvergreenApp -InputObject $Reader -CustomPath $Path -WarningAction "SilentlyContinue"
 
     # Install Adobe Acrobat Reader
     try {
-        Write-Host "`tInstalling Adobe Acrobat Reader DC"
+        Write-Host "Installing Adobe Acrobat Reader DC"
         $ArgumentList = "-sfx_nu /sALL /rps /l /msi EULA_ACCEPT=YES ENABLE_CHROMEEXT=0 DISABLE_BROWSER_INTEGRATION=1 ENABLE_OPTIMIZATION=YES ADD_THUMBNAILPREVIEW=0 DISABLEDESKTOPSHORTCUT=1"
         $params = @{
             FilePath     = $OutFile.FullName
@@ -61,8 +61,8 @@ if ($Reader) {
         Select-Object -First 1
 
     # Run post install actions
-    Write-Host "`tPost install configuration Reader"
-    Write-Host "`tGetting Acrobat updates"
+    Write-Host "Post install configuration Reader"
+    Write-Host "Getting Acrobat updates"
     $Executables = "$env:ProgramFiles\Adobe\Acrobat DC\Acrobat\Acrobat.exe", `
         "${env:ProgramFiles(x86)}\Adobe\Acrobat DC\Acrobat\Acrobat.exe", `
         "${env:ProgramFiles(x86)}\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe"
@@ -74,7 +74,7 @@ if ($Reader) {
 
             # Update Adobe Acrobat Reader
             try {
-                Write-Host "`tInstalling update: $($UpdateOutFile.FullName)."
+                Write-Host "Installing update: $($UpdateOutFile.FullName)."
                 $params = @{
                     FilePath     = "$env:SystemRoot\System32\msiexec.exe"
                     ArgumentList = "/update $($UpdateOutFile.FullName) /quiet /qn"
@@ -90,7 +90,7 @@ if ($Reader) {
         }
 
         # Configure update tasks
-        Write-Host "`tConfigure Adobe Acrobat Reader services"
+        Write-Host "Configure Adobe Acrobat Reader services"
         try {
             Get-Service -Name "AdobeARMservice" -ErrorAction "SilentlyContinue" | Set-Service -StartupType "Disabled" -ErrorAction "SilentlyContinue"
             Get-ScheduledTask "Adobe Acrobat Update Task*" | Unregister-ScheduledTask -Confirm:$False -ErrorAction "SilentlyContinue"

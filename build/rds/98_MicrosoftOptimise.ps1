@@ -272,5 +272,5 @@ Get-WinEvent -ListLog * | ForEach-Object { Clear-WinEvent $_.LogName -Confirm:$F
 # MicrosoftOptimizer
 #endregion
 
-Write-Host " Complete: OptimiseImage."
+Write-Host "Complete: OptimiseImage."
 #endregion

@@ -22,16 +22,16 @@ New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue
 
 #region Citrix Optimizer
 Write-Host "Citrix Optimizer."
-Write-Host "`tUsing path: $Path."
+Write-Host "Using path: $Path."
 $Installer = Get-ChildItem -Path $Path -Filter "CitrixOptimizer.zip" -Recurse -ErrorAction "SilentlyContinue"
 
 if ($Installer) {
-    Write-Host "`tFound zip file: $($Installer.FullName)."
+    Write-Host "Found zip file: $($Installer.FullName)."
     Expand-Archive -Path $Installer.FullName -DestinationPath $Path -Force
 
     $Template = Get-ChildItem -Path $Path -Recurse -Filter $OptimizerTemplate
     if ($Template) {
-        Write-Host "`tFound template file: $($Template.FullName)."
+        Write-Host "Found template file: $($Template.FullName)."
         try {
             $OptimizerBin = Get-ChildItem -Path $Path -Recurse -Filter "CtxOptimizerEngine.ps1"
             Push-Location -Path $OptimizerBin.Directory

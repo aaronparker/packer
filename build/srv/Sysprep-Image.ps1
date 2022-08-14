@@ -33,9 +33,9 @@ function Get-InstalledApplication () {
 
 
 # Re-enable Defender
-Write-Host " Enable Windows Defender real time scan"
+Write-Host "Enable Windows Defender real time scan"
 Set-MpPreference -DisableRealtimeMonitoring $false
-Write-Host " Enable Windows Store updates"
+Write-Host "Enable Windows Store updates"
 reg delete HKLM\Software\Policies\Microsoft\Windows\CloudContent /v DisableWindowsConsumerFeatures /f
 reg delete HKLM\Software\Policies\Microsoft\WindowsStore /v AutoDownload /f
 
@@ -50,13 +50,13 @@ catch {
 # Determine whether the Citrix Virtual Desktop Agent is installed
 $CitrixVDA = Get-InstalledApplication | Where-Object { $_.DisplayName -like "*Machine Identity Service Agent*" }
 if ($Null -ne $CitrixVDA) {
-    Write-Host " Citrix Virtual Desktop agent detected, skipping Sysprep."
+    Write-Host "Citrix Virtual Desktop agent detected, skipping Sysprep."
 }
 else {
 
     # Sysprep
     #region Prepare
-    Write-Host " Run Sysprep"
+    Write-Host "Run Sysprep"
     if (Get-Service -Name "RdAgent" -ErrorAction "SilentlyContinue") { Set-Service -Name "RdAgent" -StartupType "Disabled" }
     if (Get-Service -Name "WindowsAzureTelemetryService" -ErrorAction "SilentlyContinue") { Set-Service -Name "WindowsAzureTelemetryService" -StartupType "Disabled" }
     if (Get-Service -Name "WindowsAzureGuestAgent" -ErrorAction "SilentlyContinue") { Set-Service -Name "WindowsAzureGuestAgent" -StartupType "Disabled" }
@@ -79,5 +79,5 @@ else {
     $imageState = Get-ItemProperty $RegPath | Select-Object -Property "ImageState"
     Write-Output $imageState.ImageState
     #endregion
-    Write-Host " Complete: Sysprep."
+    Write-Host "Complete: Sysprep."
 }

@@ -23,11 +23,11 @@ $App = Get-EvergreenApp -Name "MicrosoftTeams" | Where-Object { $_.Architecture 
 if ($App) {
 
     # Download
-    $OutFile = Save-EvergreenApp -InputObject $App -Path $Path -WarningAction "SilentlyContinue"
+    $OutFile = Save-EvergreenApp -InputObject $App -CustomPath $Path -WarningAction "SilentlyContinue"
 
     # Install
     try {
-        Write-Host "`tInstalling Microsoft Teams: $($App.Version)."
+        Write-Host "Installing Microsoft Teams: $($App.Version)."
         REG add "HKLM\SOFTWARE\Microsoft\Teams" /v "IsWVDEnvironment" /t REG_DWORD /d 1 /f 2> $Null
         REG add "HKLM\SOFTWARE\Citrix\PortICA" /v "IsWVDEnvironment" /t REG_DWORD /d 1 /f 2> $Null
 
@@ -46,7 +46,7 @@ if ($App) {
     }
 }
 else {
-    Write-Host "`tFailed to retrieve Microsoft Teams."
+    Write-Host "Failed to retrieve Microsoft Teams."
 }
 
 # Teams JSON files

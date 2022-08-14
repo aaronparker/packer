@@ -24,11 +24,11 @@ $App = Get-EvergreenApp -Name "MicrosoftOneDrive" | Where-Object { $_.Ring -eq "
 if ($App) {
 
     # Download
-    $OutFile = Save-EvergreenApp -InputObject $App -Path $Path -WarningAction "SilentlyContinue"
+    $OutFile = Save-EvergreenApp -InputObject $App -CustomPath $Path -WarningAction "SilentlyContinue"
 
     # Install
     try {
-        Write-Host "`tInstalling Microsoft OneDrive: $($App.Version)."
+        Write-Host "Installing Microsoft OneDrive: $($App.Version)."
         $params = @{
             FilePath     = $OutFile.FullName
             ArgumentList = "/silent /ALLUSERS"
@@ -40,7 +40,7 @@ if ($App) {
         Do {
             Start-Sleep -Seconds 10
         } While (Get-Process -Name "OneDriveSetup" -ErrorAction "SilentlyContinue")
-        Get-Process -Name "OneDrive" | Stop-Process -Force -ErrorAction "SilentlyContinue"
+        Get-Process -Name "OneDrive" -ErrorAction "SilentlyContinue" | Stop-Process -Force -ErrorAction "SilentlyContinue"
     }
     catch {
         Write-Warning -Message "`tERR: Failed to install Microsoft OneDrive with: $($Result.ExitCode)."

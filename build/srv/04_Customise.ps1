@@ -16,7 +16,7 @@ param (
 $ProgressPreference = "SilentlyContinue"
 
 #region Script logic
-Write-Host " Start: Customise."
+Write-Host "Start: Customise."
 Get-ChildItem -Path $Path
 $Script = Get-ChildItem -Path $Path -Filter $InvokeScript -Recurse | Select-Object -First 1
 
@@ -24,7 +24,7 @@ $Script = Get-ChildItem -Path $Path -Filter $InvokeScript -Recurse | Select-Obje
 if ($Null -ne $Script) {
     try {
         Push-Location -Path $Path
-        Write-Host " Running script: $($Script.FullName)."
+        Write-Host "Running script: $($Script.FullName)."
         . $Script.FullName -Path $Path
         Pop-Location
     }
@@ -36,5 +36,5 @@ else {
     Write-Warning -Message " ERR: Could not find $InvokeScript in $Path."
 }
 
-Write-Host " Complete: Customise."
+Write-Host "Complete: Customise."
 #endregion

@@ -18,16 +18,16 @@ Write-Host "Microsoft FSLogix Apps agent"
 
 # Download
 $App = Get-EvergreenApp -Name "MicrosoftFSLogixApps" | Where-Object { $_.Channel -eq "Production" } | Select-Object -First 1
-Write-Host "`tMicrosoft FSLogix Apps agent: $($App.Version)."
-$OutFile = Save-EvergreenApp -InputObject $App -Path $Path -WarningAction "SilentlyContinue"
+Write-Host "Microsoft FSLogix Apps agent: $($App.Version)."
+$OutFile = Save-EvergreenApp -InputObject $App -CustomPath $Path -WarningAction "SilentlyContinue"
 
 # Unpack
 try {
-    Write-Host "`tUnpacking: $($OutFile.FullName)."
+    Write-Host "Unpacking: $($OutFile.FullName)."
     Expand-Archive -Path $OutFile.FullName -DestinationPath $Path -Force
 }
 catch {
-    Write-Host "`tERR:: Failed to unpack: $($OutFile.FullName)."
+    Write-Host "ERR:: Failed to unpack: $($OutFile.FullName)."
 }
 
 # Install
@@ -35,7 +35,7 @@ foreach ($file in "FSLogixAppsSetup.exe", "FSLogixAppsRuleEditorSetup.exe") {
     $Installers = Get-ChildItem -Path $Path -Recurse -Include $file | Where-Object { $_.Directory -match "x64" }
     foreach ($installer in $Installers) {
         try {
-            Write-Host "`tInstalling: $($installer.FullName)."
+            Write-Host "Installing: $($installer.FullName)."
             $params = @{
                 FilePath     = $installer.FullName
                 ArgumentList = "/install /quiet /norestart"

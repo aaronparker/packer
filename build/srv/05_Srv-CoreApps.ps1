@@ -11,7 +11,7 @@ param (
 
 #region Functions
 function Install-RequiredModule {
-    Write-Host " Installing required modules"
+    Write-Host "Installing required modules"
     # Install the Evergreen module; https://github.com/aaronparker/Evergreen
     Install-Module -Name Evergreen -AllowClobber
 
@@ -20,30 +20,30 @@ function Install-RequiredModule {
 }
 
 function Install-VcRedistributable ($Path) {
-    Write-Host " Microsoft Visual C++ Redistributables"
+    Write-Host "Microsoft Visual C++ Redistributables"
     if (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
     $VcList = Get-VcList -Release 2010, 2012, 2013, 2019
 
     Save-VcRedist -Path $Path -VcList $VcList -Verbose
     Install-VcRedist -VcList $VcList -Path $Path -Verbose
-    Write-Host " Done"
+    Write-Host "Done"
 }
 
 function Install-MicrosoftEdge ($Path) {
-    Write-Host " Microsoft Edge"
+    Write-Host "Microsoft Edge"
     $App = Get-EvergreenApp -Name "MicrosoftEdge" | Where-Object { $_.Architecture -eq "x64" -and $_.Channel -eq "Stable" -and $_.Release -eq "Enterprise" } `
     | Sort-Object -Property @{ Expression = { [System.Version]$_.Version }; Descending = $true } | Select-Object -First 1
 
     if ($App) {
-        Write-Host " Downloading Microsoft Edge"
+        Write-Host "Downloading Microsoft Edge"
         if (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
         # Download
-        Write-Host " Downloading Microsoft Edge"
+        Write-Host "Downloading Microsoft Edge"
         $OutFile = Save-EvergreenApp -InputObject $App -Path $Path -WarningAction "SilentlyContinue"
 
         # Install
-        Write-Host " Installing Microsoft Edge"
+        Write-Host "Installing Microsoft Edge"
         try {
             $params = @{
                 FilePath     = "$env:SystemRoot\System32\msiexec.exe"
@@ -58,7 +58,7 @@ function Install-MicrosoftEdge ($Path) {
             Write-Warning -Message " ERR: Failed to install Microsoft Edge."
         }
 
-        Write-Host " Post-install config"
+        Write-Host "Post-install config"
         $prefs = @{
             "homepage"               = "edge://newtab"
             "homepage_is_newtabpage" = $false
@@ -84,10 +84,10 @@ function Install-MicrosoftEdge ($Path) {
         foreach ($service in $services) { Get-Service -Name $service | Set-Service -StartupType "Disabled" }
         foreach ($task in (Get-ScheduledTask -TaskName *Edge*)) { Unregister-ScheduledTask -TaskName $Task -Confirm:$False -ErrorAction SilentlyContinue }
         Remove-Variable -Name url
-        Write-Host " Done"
+        Write-Host "Done"
     }
     else {
-        Write-Host " Failed to retrieve Microsoft Edge"
+        Write-Host "Failed to retrieve Microsoft Edge"
     }
 }
 #endregion Functions
@@ -114,5 +114,5 @@ if (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.Installati
 Install-RequiredModule
 Install-VcRedistributable -Path "$Path\VcRedist"
 Install-MicrosoftEdge -Path "$Path\Edge"
-Write-Host " Complete: $($MyInvocation.MyCommand)."
+Write-Host "Complete: $($MyInvocation.MyCommand)."
 #endregion

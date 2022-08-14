@@ -89,7 +89,7 @@ function Install-LobApp ($Path, $AppsUrl) {
         $Items = Get-AzureBlobItem -Uri "$($AppsUrl)?comp=list" | Where-Object { $_.Name -match "zip?" }
     }
     catch {
-        Write-Host " Failed to retrieve items from: [$AppsUrl]."
+        Write-Host "Failed to retrieve items from: [$AppsUrl]."
         Write-Warning -Message " ERR: Failed to retrieve items from: [$AppsUrl]."
     }
 
@@ -101,7 +101,7 @@ function Install-LobApp ($Path, $AppsUrl) {
         try {
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
             $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $item.Url -Leaf)
-            Write-Host " Downloading item: [$($item.Url)]."
+            Write-Host "Downloading item: [$($item.Url)]."
             Invoke-WebRequest -Uri $item.Url -OutFile $OutFile -UseBasicParsing
         }
         catch {
@@ -110,7 +110,7 @@ function Install-LobApp ($Path, $AppsUrl) {
         Expand-Archive -Path $OutFile -DestinationPath $AppPath -Force
         Remove-Item -Path $OutFile -Force -ErrorAction "SilentlyContinue"
 
-        Write-Host " Installing item: $($AppName)."
+        Write-Host "Installing item: $($AppName)."
         Push-Location -Path $AppPath
         Get-ChildItem -Path $AppPath -Recurse | Unblock-File
         . .\Deploy-Application.ps1
@@ -130,5 +130,5 @@ New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue
 if (Test-Path -Path env:AppsUrl) {
     Install-LobApp -Path $Path -AppsUrl $env:AppsUrl
 }
-Write-Host " Complete: LoBApps."
+Write-Host "Complete: LoBApps."
 #endregion
