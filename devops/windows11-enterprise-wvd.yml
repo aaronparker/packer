@@ -43,7 +43,7 @@ jobs:
     inputs:
       connectedServiceType: 'azure'
       azureSubscription: 'Visual Studio Enterprise Subscription(63e8f660-f6a4-4ac5-ad4e-623268509f20)'
-      templatePath: 'templates/rds/PackerTemplate-WindowsAzure.json'
+      templatePath: 'templates/rds/PackerTemplate-WindowsAzure.pkr.json'
       command: 'validate'
       variables: |
         image_publisher=$(image_publisher)
@@ -71,7 +71,7 @@ jobs:
     inputs:
       connectedServiceType: 'azure'
       azureSubscription: 'Visual Studio Enterprise Subscription(63e8f660-f6a4-4ac5-ad4e-623268509f20)'
-      templatePath: 'templates/rds/PackerTemplate-WindowsAzure.json'
+      templatePath: 'templates/rds/PackerTemplate-WindowsAzure.pkr.json'
       command: 'build'
       variables: |
         image_publisher=$(image_publisher)
