@@ -25,7 +25,6 @@
         "build_key_vault": "stpyimageaustraliaeast",
         "build_vnet": "vnet-ImageBuild-AustraliaEast",
         "build_subnet": "subnet-Packer",
-        "build_source_repo": "",
         "destination_gallery_resource_group": "rg-Images-AustraliaEast",
         "destination_gallery_name": "sigWindowsVirtualDesktop",
         "destination_image_name": "{{user `image_publisher`}}-{{user `image_offer`}}-{{user `image_sku`}}",
@@ -77,27 +76,12 @@
                 "PackagesUrl={{user `packages_url`}}"
             ],
             "scripts": [
+                "build/rds/00_SupportFunctions.ps1",
                 "build/rds/01_Rds-PrepImage.ps1",
-                "build/common/02_Packages.ps1",
-                "build/common/03_RegionLanguage.ps1",
-                "build/rds/05_Rds-Roles.ps1"
-            ]
-        },
-        {
-            "type": "powershell",
-            "inline": [
-                "New-Item -Path \"{{user `apps_directory`}}\\image-customise\" -ItemType \"Directory\" -Force -ErrorAction \"SilentlyContinue\" > $Null"
-            ]
-        },
-        {
-            "type": "file",
-            "sources": ["{{user `working_directory`}}/image-customise"],
-            "destination": "{{user `apps_directory`}}\\image-customise"
-        },
-        {
-            "type": "powershell",
-            "scripts": [
-                "build/common/04_Customise.ps1"
+                "build/rds/02_Packages.ps1",
+                "build/rds/03_RegionLanguage.ps1",
+                "build/rds/04_Rds-Roles.ps1",
+                "build/rds/05_Customise.ps1"
             ]
         },
         {
@@ -113,7 +97,6 @@
         {
             "type": "powershell",
             "scripts": [
-                "build/common/06_SupportFunctions.ps1",
                 "build/rds/07_MicrosoftVcRedists.ps1",
                 "build/rds/08_MicrosoftFSLogixApps.ps1",
                 "build/rds/09_MicrosoftEdge.ps1",
@@ -158,45 +141,29 @@
         {
             "type": "powershell",
             "inline": [
-                "New-Item -Path \"{{user `apps_directory`}}\\Tools\" -ItemType \"Directory\" -Force -ErrorAction \"SilentlyContinue\" > $Null"
+                "New-Item -Path \"C:\\Apps\\Tools\" -ItemType \"Directory\" -Force -ErrorAction \"SilentlyContinue\" > $Null"
             ]
         },
         {
             "type": "file",
-            "sources": ["{{user `working_directory`}}/tools/rds"],
-            "destination": "{{user `apps_directory`}}\\Tools"
+            "direction": "upload",
+            "max_retries": 2,
+            "source": "{{user `working_directory`}}/tools/rds",
+            "destination": "C:\\Apps\\Tools"
         },
         {
             "type": "powershell",
             "scripts": [
                 "build/rds/98_CitrixOptimizer.ps1",
-                "build/rds/99_Bisf.ps1",
-                "build/common/Get-InstalledSoftware.ps1",
-                "build/common/Get-InstalledHotfixes.ps1"
+                "build/rds/Get-Installed.ps1"
             ]
         },
         {
             "type": "file",
             "direction": "download",
-            "max_retries": 2,
-            "source": "C:\\Windows\\Temp\\InstalledSoftware.json",
-            "destination": "InstalledSoftware.json"
-        },
-        {
-            "type": "file",
-            "direction": "download",
-            "max_retries": 2,
-            "source": "C:\\Windows\\Temp\\InstalledHotfixes.json",
-            "destination": "InstalledHotfixes.json"
-        },
-        {
-            "type": "powershell",
-            "inline": [
-                "If (Get-Service -Name RdAgent -ErrorAction SilentlyContinue) { Set-Service RdAgent -StartupType Disabled }",
-                "If (Get-Service -Name WindowsAzureTelemetryService -ErrorAction SilentlyContinue) { Set-Service WindowsAzureTelemetryService -StartupType Disabled }",
-                "If (Get-Service -Name WindowsAzureGuestAgent -ErrorAction SilentlyContinue) { Set-Service WindowsAzureGuestAgent -StartupType Disabled }",
-                "Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\SysPrepExternal\\Generalize' -Name '*'"
-            ]
+            "max_retries": 1,
+            "source": "C:\\Windows\\Temp\\Reports\\Installed.zip",
+            "destination": "{{user `working_directory`}}\\reports\\Installed.zip"
         },
         {
             "type": "windows-restart"
@@ -204,7 +171,7 @@
         {
             "type": "powershell",
             "scripts": [
-                "build/common/Sysprep-Image.ps1"
+                "build/rds/Sysprep-Image.ps1"
             ]
         }
     ],

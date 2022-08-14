@@ -140,22 +140,7 @@
         },
         {
             "type": "powershell",
-            "inline": [
-                "New-Item -Path \"C:\\Apps\\Tools\" -ItemType \"Directory\" -Force -ErrorAction \"SilentlyContinue\" > $Null"
-            ]
-        },
-        {
-            "type": "file",
-            "direction": "upload",
-            "max_retries": 2,
-            "source": "{{user `working_directory`}}/tools/rds",
-            "destination": "C:\\Apps\\Tools"
-        },
-        {
-            "type": "powershell",
             "scripts": [
-                "build/rds/98_CitrixOptimizer.ps1",
-                "build/rds/99_Bisf.ps1",
                 "build/rds/Get-Installed.ps1"
             ]
         },
