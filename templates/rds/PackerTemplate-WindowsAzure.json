@@ -102,12 +102,8 @@
                 "build/rds/09_MicrosoftEdge.ps1",
                 "build/rds/10_Microsoft365Apps.ps1",
                 "build/rds/11_MicrosoftTeams.ps1",
-                "build/rds/12_MicrosoftOneDrive.ps1",
-                "build/rds/14_Wvd-Agents.ps1"
+                "build/rds/12_MicrosoftOneDrive.ps1"
             ]
-        },
-        {
-            "type": "windows-restart"
         },
         {
             "type": "powershell",
