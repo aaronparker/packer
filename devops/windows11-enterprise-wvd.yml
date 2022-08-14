@@ -7,11 +7,18 @@ parameters:
 - name: image
   displayName: Pool Image
   type: string
-  default: ubuntu-latest
+  default: windows-latest
   values:
   - windows-latest
   - ubuntu-latest
   - macOS-latest
+
+resources:
+  repositories:
+  - repository: packer
+    type: github
+    name: aaronparker/packer
+    endpoint: aaronparker
 
 trigger:
 - none
@@ -23,7 +30,7 @@ jobs:
     vmImage: ${{ parameters.image }}
 
   steps:
-  - checkout: github://aaronparker/packer  # self represents the repo where the initial Pipelines YAML file was found
+  - checkout: packer
     clean: 'true'
 
   - task: riezebosch.Packer.PackerTool.PackerTool@0
