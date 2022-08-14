@@ -1,7 +1,7 @@
 <#
 #>
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="Outputs progress to the pipeline log")]
 [CmdletBinding()]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 param (
     [Parameter()]
     [System.String] $Path = "$env:SystemRoot\Temp\Reports",

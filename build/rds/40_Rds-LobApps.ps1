@@ -3,8 +3,8 @@
         Install line-of-business applications from an Azure storage account
         Assumes applications are installed via the PSAppDeployToolkit
 #>
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="Outputs progress to the pipeline log")]
 [CmdletBinding()]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\Apps"

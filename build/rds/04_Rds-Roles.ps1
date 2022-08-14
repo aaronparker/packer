@@ -2,8 +2,8 @@
     .SYNOPSIS
         Enable/disable Windows roles and features and set language/regional settings.
 #>
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="Outputs progress to the pipeline log")]
 [CmdletBinding()]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 param ()
 
 #region Script logic

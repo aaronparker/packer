@@ -2,8 +2,8 @@
     .SYNOPSIS
         Installs modules required for updating the markdown and committing changes
 #>
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="Outputs progress to the pipeline log")]
 [CmdletBinding()]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 param (
     [Parameter()]
     [System.String[]] $Modules = @("MarkdownPS", "powershell-yaml", "posh-git")

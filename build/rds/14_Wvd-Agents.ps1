@@ -3,8 +3,8 @@
     .SYNOPSIS
         Downloads / installs the Windows Virtual Desktop agents and services
 #>
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="Outputs progress to the pipeline log")]
 [CmdletBinding()]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 param (
     [Parameter(Mandatory = $False)]
     [System.String] $LogPath = "$env:SystemRoot\Logs\Packer",

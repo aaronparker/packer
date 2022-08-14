@@ -2,8 +2,8 @@
     .SYNOPSIS
         Uninstall Chocolatey.
 #>
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="Outputs progress to the pipeline log")]
 [CmdletBinding()]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 param ()
 
 if (!$env:ChocolateyInstall) {
