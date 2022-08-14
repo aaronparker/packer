@@ -3,12 +3,9 @@
     .SYNOPSIS
         Downloads / installs the Windows Virtual Desktop agents and services
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="Outputs progress to the pipeline log")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification = "Outputs progress to the pipeline log")]
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory = $False)]
-    [System.String] $LogPath = "$env:SystemRoot\Logs\Packer",
-
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\App\Microsoft\Wvd"
 )
@@ -18,104 +15,60 @@ param (
 
 # Create target folder
 New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
-New-Item -Path $LogPath -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
 
 # Run tasks/install apps
 #region RTC service
 Write-Host "Microsoft WvdAgents."
-$App = Get-EvergreenApp -Name "MicrosoftWvdRtcService" | Where-Object { $_.Architecture -eq "x64"} | Select-Object -First 1
-if ($App) {
+$App = Get-EvergreenApp -Name "MicrosoftWvdRtcService" | Where-Object { $_.Architecture -eq "x64" } | Select-Object -First 1
+$OutFile = Save-EvergreenApp -InputObject $App -CustomPath $CustomPath -WarningAction "SilentlyContinue"
 
-    # Download
-    Write-Host "Downloading Microsoft Remote Desktop WebRTC Redirector Service"
-    $OutFile = Save-EvergreenApp -InputObject $App -CustomPath $Path -WarningAction "SilentlyContinue"
-
-    # Install RTC
-    try {
-        Write-Host "Installing Microsoft Remote Desktop WebRTC Redirector Service: $($App.Version)."
-        $params = @{
-            FilePath     = "$env:SystemRoot\System32\msiexec.exe"
-            ArgumentList = "/package $($OutFile.FullName) ALLUSERS=1 /quiet /Log $LogPath"
-            WindowStyle  = "Hidden"
-            Wait         = $True
-            PassThru     = $True
-            Verbose      = $True
-        }
-        Start-Process @params
-    }
-    catch {
-        Write-Warning -Message "`tERR: Failed to install Microsoft Remote Desktop WebRTC Redirector Service."
-    }
+# Install RTC
+Write-Host "Installing Microsoft Remote Desktop WebRTC Redirector Service: $($App.Version)."
+$params = @{
+    FilePath     = "$env:SystemRoot\System32\msiexec.exe"
+    ArgumentList = "/package $($OutFile.FullName) ALLUSERS=1 /quiet /Log $LogPath"
+    NoNewWindow  = $True
+    Wait         = $True
+    PassThru     = $True
+    Verbose      = $True
 }
-else {
-    Write-Warning -Message "`tERR: Failed to retrieve Microsoft Remote Desktop WebRTC Redirector Service"
-}
+Start-Process @params
 #endregion
 
 #region Boot Loader
 Write-Host "Microsoft Windows Virtual Desktop Agent Bootloader"
-$App = Get-EvergreenApp -Name "MicrosoftWvdBootLoader" | Where-Object { $_.Architecture -eq "x64"} | Select-Object -First 1
-if ($App) {
-    if (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
+$App = Get-EvergreenApp -Name "MicrosoftWvdBootLoader" | Where-Object { $_.Architecture -eq "x64" } | Select-Object -First 1
+$OutFile = Save-EvergreenApp -InputObject $App -Path $CustomPath -WarningAction "SilentlyContinue"
 
-    # Download
-    Write-Host "Downloading Microsoft Windows Virtual Desktop Agent Bootloader"
-    $OutFile = Save-EvergreenApp -InputObject $App -Path $Path -WarningAction "SilentlyContinue"
-
-    # Install
-    Write-Host "Installing Microsoft Windows Virtual Desktop Agent Bootloader: $($App.Version)."
-    try {
-        $params = @{
-            FilePath     = "$env:SystemRoot\System32\msiexec.exe"
-            ArgumentList = "/package $($OutFile.FullName) ALLUSERS=1 /quiet /Log $LogPath"
-            WindowStyle  = "Hidden"
-            Wait         = $True
-            PassThru     = $True
-            Verbose      = $True
-        }
-        Start-Process @params
-    }
-    catch {
-        Write-Warning -Message "`tERR: Failed to install Microsoft Windows Virtual Desktop Agent Bootloader"
-    }
+# Install
+Write-Host "Installing Microsoft Windows Virtual Desktop Agent Bootloader: $($App.Version)."
+$params = @{
+    FilePath     = "$env:SystemRoot\System32\msiexec.exe"
+    ArgumentList = "/package $($OutFile.FullName) ALLUSERS=1 /quiet /Log $LogPath"
+    NoNewWindow  = $True
+    Wait         = $True
+    PassThru     = $True
+    Verbose      = $True
 }
-else {
-    Write-Warning -Message "`tERR: Failed to Microsoft Windows Virtual Desktop Agent Bootloader"
-}
+Start-Process @params
 #endregion
 
 #region Infra agent
+<#
 Write-Host "Microsoft WVD Infrastructure Agent"
-$App = Get-EvergreenApp -Name "MicrosoftWvdInfraAgent" | Where-Object { $_.Architecture -eq "x64"}
-if ($App) {
-
-    # Download
-    Write-Host "Downloading Microsoft WVD Infrastructure Agent: $($App.Version)."
-    $OutFile = Save-EvergreenApp -InputObject $App -Path $Path -WarningAction "SilentlyContinue"
-
-    # Install
-    <#
-    Write-Host "Installing Microsoft WVD Infrastructure Agent"
-    try {
-        $params = @{
-            FilePath     = "$env:SystemRoot\System32\msiexec.exe"
-            ArgumentList = "/package $($OutFile.FullName) ALLUSERS=1 /quiet"
-            WindowStyle  = "Hidden"
-            Wait         = $True
-            PassThru     = $True
-            Verbose      = $True
-        }
-        $process = Start-Process @params
-    }
-    catch {
-        Write-Warning -Message "`tERR: Failed to install Microsoft WVD Infrastructure Agent."
-    }
-    Write-Host "Done"
-    #>
+$App = Get-EvergreenApp -Name "MicrosoftWvdInfraAgent" | Where-Object { $_.Architecture -eq "x64" }
+$OutFile = Save-EvergreenApp -InputObject $App -Path $CustomPath -WarningAction "SilentlyContinue"
+Write-Host "Installing Microsoft WVD Infrastructure Agent"
+$params = @{
+    FilePath     = "$env:SystemRoot\System32\msiexec.exe"
+    ArgumentList = "/package $($OutFile.FullName) ALLUSERS=1 /quiet"
+    NoNewWindow  = $True
+    Wait         = $True
+    PassThru     = $True
+    Verbose      = $True
 }
-else {
-    Write-Warning -Message "`tERR: Failed to retrieve Microsoft WVD Infrastructure Agent"
-}
+Start-Process @params
+#>
 #endregion
 
 # if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }

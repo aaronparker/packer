@@ -3,7 +3,7 @@
     .SYNOPSIS
         Install evergreen core applications.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="Outputs progress to the pipeline log")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification = "Outputs progress to the pipeline log")]
 [CmdletBinding()]
 param (
     [Parameter(Mandatory = $False)]
@@ -19,34 +19,22 @@ New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue
 Write-Host "Microsoft OneDrive"
 $App = Get-EvergreenApp -Name "MicrosoftOneDrive" | Where-Object { $_.Ring -eq "Production" -and $_.Type -eq "Exe" -and $_.Architecture -eq "AMD64" } | `
     Sort-Object -Property @{ Expression = { [System.Version]$_.Version }; Descending = $true } | Select-Object -First 1
-if ($App) {
+$OutFile = Save-EvergreenApp -InputObject $App -CustomPath $Path -WarningAction "SilentlyContinue"
 
-    # Download
-    $OutFile = Save-EvergreenApp -InputObject $App -CustomPath $Path -WarningAction "SilentlyContinue"
-
-    # Install
-    try {
-        Write-Host "Installing Microsoft OneDrive: $($App.Version)."
-        $params = @{
-            FilePath     = $OutFile.FullName
-            ArgumentList = "/silent /ALLUSERS"
-            Wait         = $False
-            PassThru     = $True
-            Verbose      = $True
-        }
-        $Result = Start-Process @params
-        Do {
-            Start-Sleep -Seconds 10
-        } While (Get-Process -Name "OneDriveSetup" -ErrorAction "SilentlyContinue")
-        Get-Process -Name "OneDrive" -ErrorAction "SilentlyContinue" | Stop-Process -Force -ErrorAction "SilentlyContinue"
-    }
-    catch {
-        Write-Warning -Message "`tERR: Failed to install Microsoft OneDrive with: $($Result.ExitCode)."
-    }
+# Install
+Write-Host "Installing Microsoft OneDrive: $($App.Version)."
+$params = @{
+    FilePath     = $OutFile.FullName
+    ArgumentList = "/silent /ALLUSERS"
+    Wait         = $False
+    PassThru     = $True
+    Verbose      = $True
 }
-else {
-    Write-Warning -Message "`tERR: Failed to retrieve Microsoft OneDrive"
-}
+Start-Process @params
+Do {
+    Start-Sleep -Seconds 10
+} While (Get-Process -Name "OneDriveSetup" -ErrorAction "SilentlyContinue")
+Get-Process -Name "OneDrive" -ErrorAction "SilentlyContinue" | Stop-Process -Force -ErrorAction "SilentlyContinue"
 
 # if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
 Write-Host "Complete: Microsoft OneDrive."

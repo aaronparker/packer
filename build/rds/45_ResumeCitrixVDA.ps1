@@ -14,7 +14,7 @@ if (Test-Path -Path $FilePath) {
     try {
         $params = @{
             FilePath     = "$Env:ProgramData\Citrix\XenDesktopSetup\XenDesktopVdaSetup.exe"
-            WindowStyle  = "Hidden"
+            NoNewWindow  = $True
             Wait         = $True
             PassThru     = $True
             Verbose      = $True

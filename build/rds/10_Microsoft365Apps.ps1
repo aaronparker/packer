@@ -3,7 +3,7 @@
     .SYNOPSIS
         Install evergreen core applications.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="Outputs progress to the pipeline log")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification = "Outputs progress to the pipeline log")]
 [CmdletBinding()]
 param (
     [Parameter(Mandatory = $False)]
@@ -70,36 +70,24 @@ $OfficeXml = @"
 # Get Office version
 Write-Host "Microsoft 365 Apps: $Channel"
 $App = Get-EvergreenApp -Name "Microsoft365Apps" | Where-Object { $_.Channel -eq $Channel } | Select-Object -First 1
-if ($App) {
+$OutFile = Save-EvergreenApp -InputObject $App -CustomPath $Path -WarningAction "SilentlyContinue"
 
-    # Download setup.exe
-    $OutFile = Save-EvergreenApp -InputObject $App -CustomPath $Path -WarningAction "SilentlyContinue"
+# Download Office package, Setup fails to exit, so wait 9-10 mins for Office install to complete
+Write-Host "Installing Microsoft 365 Apps: $($App.Version)."
+$XmlFile = Join-Path -Path $Path -ChildPath "Office.xml"
+Out-File -FilePath $XmlFile -InputObject $OfficeXml -Encoding "utf8"
 
-    try {
-        # Download Office package, Setup fails to exit, so wait 9-10 mins for Office install to complete
-        Write-Host "Installing Microsoft 365 Apps: $($App.Version)."
-        $XmlFile = Join-Path -Path $Path -ChildPath "Office.xml"
-        Out-File -FilePath $XmlFile -InputObject $OfficeXml -Encoding "utf8"
-
-        $params = @{
-            FilePath     = $OutFile.FullName
-            ArgumentList = "/configure $XmlFile"
-            WindowStyle  = "Hidden"
-            Wait         = $True
-            PassThru     = $True
-            Verbose      = $True
-        }
-        Push-Location -Path $Path
-        $Result = Start-Process @params
-        Pop-Location
-    }
-    catch {
-        Write-Warning -Message "`tERR: Failed to install Microsoft 365 Apps with: $($Result.ExitCode)."
-    }
+$params = @{
+    FilePath     = $OutFile.FullName
+    ArgumentList = "/configure $XmlFile"
+    NoNewWindow  = $True
+    Wait         = $True
+    PassThru     = $True
+    Verbose      = $True
 }
-else {
-    Write-Host "Failed to retrieve Microsoft 365 Apps setup."
-}
+Push-Location -Path $Path
+Start-Process @params
+Pop-Location
 
 # # if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
 Write-Host "Complete: Microsoft 365 Apps."

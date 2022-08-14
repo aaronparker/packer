@@ -70,21 +70,6 @@
     ],
     "provisioners": [
         {
-            "type": "powershell",
-            "environment_vars": [
-                "Locale={{user `locale`}}",
-                "PackagesUrl={{user `packages_url`}}"
-            ],
-            "scripts": [
-                "build/rds/00_SupportFunctions.ps1",
-                "build/rds/01_Rds-PrepImage.ps1",
-                "build/rds/02_Packages.ps1",
-                "build/rds/03_RegionLanguage.ps1",
-                "build/rds/04_Rds-Roles.ps1",
-                "build/rds/05_Customise.ps1"
-            ]
-        },
-        {
             "type": "windows-update",
             "search_criteria": "IsInstalled=0",
             "filters": [
@@ -96,13 +81,33 @@
         },
         {
             "type": "powershell",
+            "environment_vars": [
+                "Locale={{user `locale`}}",
+                "PackagesUrl={{user `packages_url`}}"
+            ],
             "scripts": [
-                "build/rds/07_MicrosoftVcRedists.ps1",
+                "build/rds/00_SupportFunctions.ps1",
+                "build/rds/01_Rds-PrepImage.ps1",
+                "build/rds/02_Packages.ps1",
+                "build/rds/03_RegionLanguage.ps1",
+                "build/rds/04_Rds-Roles.ps1"
+            ]
+        },
+        {
+            "type": "windows-restart"
+        },
+        {
+            "type": "powershell",
+            "scripts": [
+                "build/rds/05_Customise.ps1",
+                "build/rds/06_MicrosoftVcRedists.ps1",
+                "build/rds/07_MicrosoftNET.ps1",
                 "build/rds/08_MicrosoftFSLogixApps.ps1",
                 "build/rds/09_MicrosoftEdge.ps1",
                 "build/rds/10_Microsoft365Apps.ps1",
                 "build/rds/11_MicrosoftTeams.ps1",
-                "build/rds/12_MicrosoftOneDrive.ps1"
+                "build/rds/12_MicrosoftOneDrive.ps1",
+                "build/rds/39_AdobeAcrobatReaderDC.ps1"
             ]
         },
         {
@@ -111,7 +116,6 @@
                 "AppsUrl={{user `apps_url`}}"
             ],
             "scripts": [
-                "build/rds/39_AdobeAcrobatReaderDC.ps1",
                 "build/rds/40_Rds-LobApps.ps1"
             ]
         },

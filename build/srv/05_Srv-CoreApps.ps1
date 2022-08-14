@@ -48,7 +48,7 @@ function Install-MicrosoftEdge ($Path) {
             $params = @{
                 FilePath     = "$env:SystemRoot\System32\msiexec.exe"
                 ArgumentList = "/package $($OutFile.FullName) /quiet /norestart DONOTCREATEDESKTOPSHORTCUT=true"
-                WindowStyle  = "Hidden"
+                NoNewWindow  = $True
                 Wait         = $True
                 Verbose      = $True
             }
