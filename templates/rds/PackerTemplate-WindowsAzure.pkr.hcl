@@ -1,7 +1,7 @@
 packer {
   required_plugins {
     windows-update = {
-      version = "0.14.0"
+      version = "0.14.1"
       source = "github.com/rgl/windows-update"
     }
   }
@@ -17,22 +17,22 @@ variable "apps_url" {
   default = ""
 }
 
-variable "azure_client_id" {
+variable "client_id" {
   type    = string
   default = ""
 }
 
-variable "azure_client_secret" {
+variable "client_secret" {
   type    = string
   default = ""
 }
 
-variable "azure_subscription_id" {
+variable "subscription_id" {
   type    = string
   default = "{00000000-0000-0000-0000-00000000000}"
 }
 
-variable "azure_tenant_id" {
+variable "tenant_id" {
   type    = string
   default = ""
 }

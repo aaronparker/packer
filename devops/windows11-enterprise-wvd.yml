@@ -45,26 +45,7 @@ jobs:
       azureSubscription: 'Visual Studio Enterprise Subscription(63e8f660-f6a4-4ac5-ad4e-623268509f20)'
       templatePath: 'templates/rds/PackerTemplate-WindowsAzure.pkr.hcl'
       command: 'validate'
-      variables: |
-        image_publisher=$(image_publisher)
-        image_offer=$(image_offer)
-        image_sku=$(image_sku)
-        image_date=$(Build.BuildNumber)
-        managed_image_resource_group_name=$(managed_image_resource_group_name)
-        vm_size=$(vm_size)
-        tag_owner=$(owner)
-        tag_created_date=$(Build.BuildNumber)
-        apps_url=$(apps_url)
-        packages_url=$(packages_url)
-        build_key_vault=$(build_key_vault)
-        build_resource_group=$(build_resource_group)
-        build_vnet=$(build_vnet)
-        build_subnet=$(build_subnet)
-        build_source_repo=$(build_source_repo)
-        destination_gallery_resource_group=$(destination_gallery_resource_group)
-        destination_gallery_name=$(destination_gallery_name)
-        destination_image_version=1.0.$(Build.BuildId)
-        destination_replication_regions=$(destination_replication_regions)
+      variables-file: 'templates/rds/PackerVariables-Windows11Enterprise.pkr.hcl'
 
   - task: Packer@1
     displayName: 'Build Packer template'
@@ -73,26 +54,7 @@ jobs:
       azureSubscription: 'Visual Studio Enterprise Subscription(63e8f660-f6a4-4ac5-ad4e-623268509f20)'
       templatePath: 'templates/rds/PackerTemplate-WindowsAzure.pkr.hcl'
       command: 'build'
-      variables: |
-        image_publisher=$(image_publisher)
-        image_offer=$(image_offer)
-        image_sku=$(image_sku)
-        image_date=$(Build.BuildNumber)
-        managed_image_resource_group_name=$(managed_image_resource_group_name)
-        vm_size=$(vm_size)
-        tag_owner=$(owner)
-        tag_created_date=$(Build.BuildNumber)
-        apps_url=$(apps_url)
-        packages_url=$(packages_url)
-        build_key_vault=$(build_key_vault)
-        build_resource_group=$(build_resource_group)
-        build_vnet=$(build_vnet)
-        build_subnet=$(build_subnet)
-        build_source_repo=$(build_source_repo)
-        destination_gallery_resource_group=$(destination_gallery_resource_group)
-        destination_gallery_name=$(destination_gallery_name)
-        destination_image_version=1.0.$(Build.BuildId)
-        destination_replication_regions=$(destination_replication_regions)
+      variables-file: 'templates/rds/PackerVariables-Windows11Enterprise.pkr.hcl'
 
   - task: ExtractFiles@1
     displayName: 'Extract report archive'
