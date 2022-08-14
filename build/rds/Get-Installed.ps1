@@ -119,4 +119,4 @@ catch {
 #endregion
 
 # Write the installed software list to the pipeline
-Write-Output -InputObject $software
+Write-Output -InputObject ($software | Select-Object -Property "Name", "Version" | Format-Table -AutoSize)
