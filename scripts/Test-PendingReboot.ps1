@@ -11,14 +11,14 @@ function Test-PendingReboot {
     [CmdletBinding()]
     param ()
 
-    Return ([bool]((Get-ItemProperty "hklm:SYSTEM\CurrentControlSet\Control\Session Manager").RebootPending) -or
+    return ([bool]((Get-ItemProperty "hklm:SYSTEM\CurrentControlSet\Control\Session Manager").RebootPending) -or
         [bool]((Get-ItemProperty "HKLM:SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update").RebootRequired) -or
         [bool]((Get-ItemProperty "HKLM:SYSTEM\CurrentControlSet\Control\Session Manager").PendingFileRenameOperations) -or
 
         # Computer Rename pending
         ((Get-ItemProperty 'HKLM:SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName\' | `
-                    Select-Object -Expand 'ComputerName') -ine (Get-ItemProperty 'HKLM:SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName\' | `
-                    Select-Object -Expand 'ComputerName')) -or
+                Select-Object -Expand 'ComputerName') -ine (Get-ItemProperty 'HKLM:SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName\' | `
+                Select-Object -Expand 'ComputerName')) -or
 
         # Domain Join Pending
         ((Test-Path "HKLM:SYSTEM\CurrentControlSet\Services\Netlogon\JoinDomain") -or (Test-Path "HKLM:SYSTEM\CurrentControlSet\Services\Netlogon\AvoidSpnSet"))) -or

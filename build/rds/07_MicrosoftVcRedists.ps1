@@ -12,8 +12,6 @@ param (
 )
 
 #region Script logic
-# Make Invoke-WebRequest faster
-$ProgressPreference = "SilentlyContinue"
 
 # Run tasks/install apps
 Write-Host "Microsoft Visual C++ Redistributables"

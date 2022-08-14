@@ -11,8 +11,6 @@ param (
 )
 
 #region Script logic
-# Make Invoke-WebRequest faster
-$ProgressPreference = "SilentlyContinue"
 
 # Create target folder
 New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
