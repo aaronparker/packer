@@ -23,9 +23,8 @@ jobs:
     vmImage: ${{ parameters.image }}
 
   steps:
-  - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+  - checkout: github://aaronparker/packer  # self represents the repo where the initial Pipelines YAML file was found
     clean: 'true'
-    submodules: 'true'
 
   - task: riezebosch.Packer.PackerTool.PackerTool@0
     displayName: 'Install Packer'

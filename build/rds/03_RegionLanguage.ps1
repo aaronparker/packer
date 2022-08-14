@@ -2,7 +2,7 @@
     .SYNOPSIS
         Set language/regional settings.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="Outputs progress to the pipeline log")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification = "Outputs progress to the pipeline log")]
 [CmdletBinding()]
 param (
     [Parameter(Mandatory = $False)]
@@ -10,7 +10,12 @@ param (
 )
 
 #region Functions
-function Set-RegionSetting ($Path, $Locale) {
+function Set-RegionSetting {
+    [CmdletBinding(SupportsShouldProcess = $False)]
+    param (
+        $Path, $Locale
+    )
+
     if (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
     # Select the locale
@@ -85,7 +90,7 @@ Set-TimeZone -Id $Timezone
 & $env:SystemRoot\System32\control.exe "intl.cpl,,/f:$languageXML"
 "@
 
-<#
+    <#
     $setupCompleteCMD = Join-Path -Path "$env:SystemRoot\Setup\Scripts" -ChildPath "SetupComplete.cmd"
     $setupCompleteContent = @"
 $env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File $languagePS1
@@ -114,7 +119,7 @@ $env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe -NonInteractive -
         Out-File -FilePath $OutFile -InputObject $languageXmlContent -Encoding "utf8"
     }
     catch {
-        Write-Host "ERR:: Failed to create language file: $OutFile with: $($_.Exception.Message)."
+        Write-Host "ERR: Failed to create language file: $OutFile with: $($_.Exception.Message)."
     }
 
     # Set-Region.ps1
@@ -131,14 +136,14 @@ $env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe -NonInteractive -
         Out-File -FilePath $languageXML -InputObject $languageXmlContent -Encoding "utf8"
     }
     catch {
-        Write-Host "ERR:: Failed to create language file with: $($_.Exception.Message)."
+        Write-Host "ERR: Failed to create language file with: $($_.Exception.Message)."
     }
 
     try {
         Out-File -FilePath $languagePS1 -InputObject $languagePS1Content -Encoding "utf8"
     }
     catch {
-        Write-Host "ERR:: Failed to create set-language script with: $($_.Exception.Message)."
+        Write-Host "ERR: Failed to create set-language script with: $($_.Exception.Message)."
     }
 
     ##Disable Language Pack Cleanup##

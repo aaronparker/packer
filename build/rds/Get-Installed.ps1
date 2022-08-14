@@ -1,6 +1,7 @@
 <#
 #>
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="Outputs progress to the pipeline log")]
+[OutputType([System.Management.Automation.PSObject])]
 [CmdletBinding()]
 param (
     [Parameter()]
@@ -52,7 +53,7 @@ function Get-InstalledSoftware {
     $UninstallKeys += Get-ChildItem -Path "HKU:" | Where-Object { $_.Name -match "S-\d-\d+-(\d+-){1,14}\d+$" } | ForEach-Object {
         "HKU:\$($_.PSChildName)\Software\Microsoft\Windows\CurrentVersion\Uninstall\*"
     }
-    
+
     $Apps = @()
     foreach ($Key in $UninstallKeys) {
         try {

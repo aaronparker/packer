@@ -7,8 +7,6 @@
 param ()
 
 #region Script logic
-# Make Invoke-WebRequest faster
-$ProgressPreference = "SilentlyContinue"
 
 # Run tasks
 switch -Regex ((Get-CimInstance -ClassName "CIM_OperatingSystem").Caption) {
