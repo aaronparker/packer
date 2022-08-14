@@ -3,8 +3,8 @@
         Creates markdown from JSON output generated from Azure DevOps builds
         Uses environment variables created inside the Azure DevOps environment
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 param (
     [Parameter()]
     [System.String] $Path = ([System.IO.Path]::Combine($env:SYSTEM_DEFAULTWORKINGDIRECTORY, "reports")),

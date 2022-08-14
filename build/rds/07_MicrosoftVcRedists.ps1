@@ -3,9 +3,8 @@
     .SYNOPSIS
         Install evergreen core applications.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\Apps\Microsoft\VcRedist"
@@ -21,7 +20,7 @@ Write-Host "Downloading Microsoft Visual C++ Redistributables"
 Save-VcRedist -VcList (Get-VcList) -Path $Path > $Null
 
 Write-Host "Installing Microsoft Visual C++ Redistributables"
-$Installed = Install-VcRedist -VcList (Get-VcList) -Path $Path -Silent | Out-Null
+Install-VcRedist -VcList (Get-VcList) -Path $Path -Silent | Out-Null
 
 # if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
 Write-Host "Complete: VcRedists."

@@ -3,9 +3,9 @@
     .SYNOPSIS
         Install evergreen core applications.
 #>
+[CmdletBinding()]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "")]
-[CmdletBinding()]
 param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\Apps\Adobe\AcrobatReaderDC",

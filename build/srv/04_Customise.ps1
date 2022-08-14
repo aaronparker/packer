@@ -2,8 +2,8 @@
     .SYNOPSIS
         Customise a Windows image for use as an WVD/XenApp VM in Azure.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\Apps\image-customise\src",

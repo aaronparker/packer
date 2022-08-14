@@ -2,8 +2,8 @@
     .SYNOPSIS
         Sysprep image.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 [CmdletBinding()]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "Outputs progress to the pipeline log")]
 param (
     [Parameter(Mandatory = $False)]
     [System.String] $Path = "$env:SystemDrive\Apps"
