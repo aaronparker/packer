@@ -37,26 +37,6 @@ $OfficeXml = @"
             <ExcludeApp ID="Bing" />
             <ExcludeApp ID="Teams" />
         </Product>
-        <Product ID="VisioProRetail">
-            <Language ID="MatchOS" />
-            <Language ID="MatchPreviousMSI" />
-            <ExcludeApp ID="Access" />
-            <ExcludeApp ID="Groove" />
-            <ExcludeApp ID="Lync" />
-            <ExcludeApp ID="Publisher" />
-            <ExcludeApp ID="Teams" />
-            <ExcludeApp ID="Bing" />
-        </Product>
-        <Product ID="ProjectProRetail">
-            <Language ID="MatchOS" />
-            <Language ID="MatchPreviousMSI" />
-            <ExcludeApp ID="Access" />
-            <ExcludeApp ID="Groove" />
-            <ExcludeApp ID="Lync" />
-            <ExcludeApp ID="Publisher" />
-            <ExcludeApp ID="Teams" />
-            <ExcludeApp ID="Bing" />
-        </Product>
     </Add>
     <Property Name="SharedComputerLicensing" Value="0" />
     <Property Name="PinIconsToTaskbar" Value="FALSE" />
