@@ -43,11 +43,11 @@ foreach ($file in "FSLogixAppsSetup.exe", "FSLogixAppsRuleEditorSetup.exe") {
             PassThru     = $True
         }
         $result = Start-Process @params
-        $Output = [PSCustomObject]@{
-            "Path"     = $OutFile.FullName
-            "ExitCode" = $result.ExitCode
+        $Output = [PSCustomObject] @{
+            Path     = $OutFile.FullName
+            ExitCode = $result.ExitCode
         }
-        Write-Host $Output
+        Write-Host -InputObject $Output
     }
 }
 

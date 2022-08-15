@@ -86,11 +86,11 @@ $params = @{
 }
 Push-Location -Path $Path
 $result = Start-Process @params
-$Output = [PSCustomObject]@{
-    "Path"     = $OutFile.FullName
-    "ExitCode" = $result.ExitCode
+$Output = [PSCustomObject] @{
+    Path     = $OutFile.FullName
+    ExitCode = $result.ExitCode
 }
-Write-Host $Output
+Write-Host -InputObject $Output
 Pop-Location
 
 Write-Host "Complete: Microsoft 365 Apps."

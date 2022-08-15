@@ -35,11 +35,11 @@ do {
     Start-Sleep -Seconds 10
 } while (Get-Process -Name "OneDriveSetup" -ErrorAction "SilentlyContinue")
 Get-Process -Name "OneDrive" -ErrorAction "SilentlyContinue" | Stop-Process -Force -ErrorAction "SilentlyContinue"
-$Output = [PSCustomObject]@{
-    "Path"     = $OutFile.FullName
-    "ExitCode" = $result.ExitCode
+$Output = [PSCustomObject] @{
+    Path     = $OutFile.FullName
+    ExitCode = $result.ExitCode
 }
-Write-Host $Output
+Write-Host -InputObject $Output
 
 Write-Host "Complete: Microsoft OneDrive."
 #endregion

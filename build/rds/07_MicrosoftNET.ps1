@@ -28,11 +28,11 @@ $params = @{
     Wait         = $True
 }
 $result = Start-Process @params
-$Output = [PSCustomObject]@{
-    "Path"     = $OutFile.FullName
-    "ExitCode" = $result.ExitCode
+$Output = [PSCustomObject] @{
+    Path     = $OutFile.FullName
+    ExitCode = $result.ExitCode
 }
-Write-Host $Output
+Write-Host -InputObject $Output
 
 Write-Host "Complete: Microsoft Windows Desktop Runtime."
 #endregion
