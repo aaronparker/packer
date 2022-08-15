@@ -3,7 +3,7 @@
         Install line-of-business applications from an Azure storage account
         Assumes applications are installed via the PSAppDeployToolkit
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="Outputs progress to the pipeline log")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification = "Outputs progress to the pipeline log")]
 [CmdletBinding()]
 param (
     [Parameter(Mandatory = $False)]
@@ -58,8 +58,7 @@ function Get-AzureBlobItem {
             $list = Invoke-WebRequest @iwrParams
         }
         catch [System.Exception] {
-            Write-Warning -Message "$($MyInvocation.MyCommand): failed to download: $Uri."
-            $_.Exception.Message
+            throw $_.Exception.Message
         }
         if ($Null -ne $list) {
             [System.Xml.XmlDocument] $xml = $list.Content.Substring($list.Content.IndexOf("<?xml", 0))
@@ -90,40 +89,53 @@ function Install-LobApp ($Path, $AppsUrl) {
     }
     catch {
         Write-Host "Failed to retrieve items from: [$AppsUrl]."
-        Write-Warning -Message " ERR: Failed to retrieve items from: [$AppsUrl]."
+        Write-Warning -Message " ERR: Failed with $($_.Exception.Message)."
     }
 
-    foreach ($item in $Items) {
-        $AppName = $item.Name -replace ".zip"
-        $AppPath = Join-Path -Path $Path -ChildPath $AppName
-        if (!(Test-Path $AppPath)) { New-Item -Path $AppPath -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
+    if ($Items.Count -gt 0) {
+        foreach ($item in $Items) {
+            $AppName = $item.Name -replace ".zip"
+            $AppPath = Join-Path -Path $Path -ChildPath $AppName
+            if (!(Test-Path $AppPath)) { New-Item -Path $AppPath -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
-        try {
-            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-            $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $item.Url -Leaf)
-            Write-Host "Downloading item: [$($item.Url)]."
-            Invoke-WebRequest -Uri $item.Url -OutFile $OutFile -UseBasicParsing
-        }
-        catch {
-            Write-Warning -Message " ERR: Failed to download: $($item.Url)."
-        }
-        Expand-Archive -Path $OutFile -DestinationPath $AppPath -Force
-        Remove-Item -Path $OutFile -Force -ErrorAction "SilentlyContinue"
+            try {
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                $ProgressPreference = "SilentlyContinue"
+                $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $item.Url -Leaf)
+                $params = @{
+                    Uri             = $item.Url
+                    OutFile         = $OutFile
+                    UseBasicParsing = $true
+                    ErrorAction     = "SilentlyContinue"
+                }
+                Write-Host "Downloading item: [$($item.Url)]."
+                Invoke-WebRequest @params
+            }
+            catch {
+                Write-Warning -Message " ERR: Failed to download: $($item.Url) with: with $($_.Exception.Message)"
+            }
 
-        Write-Host "Installing item: $($AppName)."
-        Push-Location -Path $AppPath
-        Get-ChildItem -Path $AppPath -Recurse | Unblock-File
-        . .\Deploy-Application.ps1
-        Pop-Location
+            try {
+                Expand-Archive -Path $OutFile -DestinationPath $AppPath -Force
+                Remove-Item -Path $OutFile -Force -ErrorAction "SilentlyContinue"
+                Write-Host "Installing item: $($AppName)."
+                Push-Location -Path $AppPath
+                Get-ChildItem -Path $AppPath -Recurse | Unblock-File
+                . .\Deploy-Application.ps1
+                Pop-Location
+            }
+            catch {
+                Write-Host $_.Exception.Message
+            }
+        }
+    }
+    else {
+        Write-Host "No line of business applications."
     }
 }
 #endregion
 
 #region Script logic
-# Make Invoke-WebRequest faster
-$ProgressPreference = "SilentlyContinue"
-
-# Create $Path folder
 New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
 
 # Run tasks

@@ -34,7 +34,11 @@ $params = @{
     PassThru     = $True
     Verbose      = $True
 }
-Start-Process @params
+$result = Start-Process @params
+[PSCustomObject]@{
+    "Path"     = $OutFile.FullName
+    "ExitCode" = $result.ExitCode
+}
 
 # Teams JSON files
 $ConfigFiles = @((Join-Path -Path "${env:ProgramFiles(x86)}\Teams Installer" -ChildPath "setup.json"),

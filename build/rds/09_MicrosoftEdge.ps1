@@ -33,7 +33,11 @@ $params = @{
     PassThru     = $True
     Verbose      = $True
 }
-Start-Process @params
+$result = Start-Process @params
+[PSCustomObject]@{
+    "Path"     = $OutFile.FullName
+    "ExitCode" = $result.ExitCode
+}
 
 # Post install configuration
 Write-Host "Post-install config"

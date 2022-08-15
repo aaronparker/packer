@@ -30,11 +30,15 @@ $params = @{
     PassThru     = $True
     Verbose      = $True
 }
-Start-Process @params
-Do {
+$result = Start-Process @params
+do {
     Start-Sleep -Seconds 10
-} While (Get-Process -Name "OneDriveSetup" -ErrorAction "SilentlyContinue")
+} while (Get-Process -Name "OneDriveSetup" -ErrorAction "SilentlyContinue")
 Get-Process -Name "OneDrive" -ErrorAction "SilentlyContinue" | Stop-Process -Force -ErrorAction "SilentlyContinue"
+[PSCustomObject]@{
+    "Path"     = $OutFile.FullName
+    "ExitCode" = $result.ExitCode
+}
 
 # if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
 Write-Host "Complete: Microsoft OneDrive."

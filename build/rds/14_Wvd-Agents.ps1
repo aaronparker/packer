@@ -32,7 +32,11 @@ $params = @{
     PassThru     = $True
     Verbose      = $True
 }
-Start-Process @params
+$result = Start-Process @params
+[PSCustomObject]@{
+    "Path"     = $OutFile.FullName
+    "ExitCode" = $result.ExitCode
+}
 #endregion
 
 #region Boot Loader
@@ -50,7 +54,11 @@ $params = @{
     PassThru     = $True
     Verbose      = $True
 }
-Start-Process @params
+$result = Start-Process @params
+[PSCustomObject]@{
+    "Path"     = $OutFile.FullName
+    "ExitCode" = $result.ExitCode
+}
 #endregion
 
 #region Infra agent

@@ -43,7 +43,11 @@ foreach ($file in "FSLogixAppsSetup.exe", "FSLogixAppsRuleEditorSetup.exe") {
             PassThru     = $True
             Verbose      = $True
         }
-        Start-Process @params
+        $result = Start-Process @params
+        [PSCustomObject]@{
+            "Path"     = $OutFile.FullName
+            "ExitCode" = $result.ExitCode
+        }
     }
 }
 # if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }

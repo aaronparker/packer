@@ -14,11 +14,11 @@ param (
 #region Script logic
 # Create target folder
 New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
-Write-Host "Microsoft Microsoft.NET"
+Write-Host "Microsoft Windows Desktop Runtime"
 
 # Download
 $App = Get-EvergreenApp -Name "Microsoft.NET" | Where-Object { $_.Installer -eq "windowsdesktop" -and $_.Architecture -eq "x64" -and $_.Channel -eq "LTS" } | Select-Object -First 1
-Write-Host "Microsoft Microsoft.NET: $($App.Version)."
+Write-Host "Microsoft Windows Desktop Runtime: $($App.Version)."
 $OutFile = Save-EvergreenApp -InputObject $App -CustomPath $Path -WarningAction "SilentlyContinue"
 $params = @{
     FilePath     = $OutFile.FullName
@@ -27,8 +27,12 @@ $params = @{
     PassThru     = $True
     Wait         = $True
 }
-Start-Process @params
+$result = Start-Process @params
+[PSCustomObject]@{
+    "Path"     = $OutFile.FullName
+    "ExitCode" = $result.ExitCode
+}
 
 # if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
-Write-Host "Complete: Microsoft Microsoft.NET."
+Write-Host "Complete: Microsoft Windows Desktop Runtime."
 #endregion

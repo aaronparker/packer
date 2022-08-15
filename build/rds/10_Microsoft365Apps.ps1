@@ -86,7 +86,11 @@ $params = @{
     Verbose      = $True
 }
 Push-Location -Path $Path
-Start-Process @params
+$result = Start-Process @params
+[PSCustomObject]@{
+    "Path"     = $OutFile.FullName
+    "ExitCode" = $result.ExitCode
+}
 Pop-Location
 
 # # if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
