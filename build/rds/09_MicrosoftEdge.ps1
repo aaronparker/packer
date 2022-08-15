@@ -31,13 +31,13 @@ $params = @{
     NoNewWindow  = $True
     Wait         = $True
     PassThru     = $True
-    Verbose      = $True
 }
 $result = Start-Process @params
-[PSCustomObject]@{
+$Output = [PSCustomObject]@{
     "Path"     = $OutFile.FullName
     "ExitCode" = $result.ExitCode
 }
+Write-Host $Output
 
 # Post install configuration
 Write-Host "Post-install config"
@@ -66,6 +66,6 @@ Remove-Item -Path "$env:Public\Desktop\Microsoft Edge*.lnk" -Force -ErrorAction 
 $services = "edgeupdate", "edgeupdatem", "MicrosoftEdgeElevationService"
 foreach ($service in $services) { Get-Service -Name $service | Set-Service -StartupType "Disabled" }
 foreach ($task in (Get-ScheduledTask -TaskName *Edge*)) { Unregister-ScheduledTask -TaskName $Task -Confirm:$False -ErrorAction SilentlyContinue }
-# if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
+
 Write-Host "Complete: Microsoft Edge."
 #endregion

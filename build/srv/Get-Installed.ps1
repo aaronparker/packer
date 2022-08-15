@@ -109,7 +109,6 @@ try {
         Path             = $(Get-ChildItem -Path $Path -Filter "*.json").FullName
         DestinationPath  = $(Join-Path -Path $Path -ChildPath $ZipFile)
         CompressionLevel = "NoCompression"
-        Verbose          = $True
     }
     Compress-Archive @params
 }

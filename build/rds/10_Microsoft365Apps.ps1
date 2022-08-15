@@ -83,16 +83,15 @@ $params = @{
     NoNewWindow  = $True
     Wait         = $True
     PassThru     = $True
-    Verbose      = $True
 }
 Push-Location -Path $Path
 $result = Start-Process @params
-[PSCustomObject]@{
+$Output = [PSCustomObject]@{
     "Path"     = $OutFile.FullName
     "ExitCode" = $result.ExitCode
 }
+Write-Host $Output
 Pop-Location
 
-# # if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
 Write-Host "Complete: Microsoft 365 Apps."
 #endregion

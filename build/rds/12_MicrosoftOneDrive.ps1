@@ -26,20 +26,20 @@ Write-Host "Installing Microsoft OneDrive: $($App.Version)."
 $params = @{
     FilePath     = $OutFile.FullName
     ArgumentList = "/silent /ALLUSERS"
+    NoNewWindow  = $True
     Wait         = $False
     PassThru     = $True
-    Verbose      = $True
 }
 $result = Start-Process @params
 do {
     Start-Sleep -Seconds 10
 } while (Get-Process -Name "OneDriveSetup" -ErrorAction "SilentlyContinue")
 Get-Process -Name "OneDrive" -ErrorAction "SilentlyContinue" | Stop-Process -Force -ErrorAction "SilentlyContinue"
-[PSCustomObject]@{
+$Output = [PSCustomObject]@{
     "Path"     = $OutFile.FullName
     "ExitCode" = $result.ExitCode
 }
+Write-Host $Output
 
-# if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
 Write-Host "Complete: Microsoft OneDrive."
 #endregion

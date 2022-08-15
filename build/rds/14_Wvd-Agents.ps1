@@ -30,13 +30,13 @@ $params = @{
     NoNewWindow  = $True
     Wait         = $True
     PassThru     = $True
-    Verbose      = $True
 }
 $result = Start-Process @params
-[PSCustomObject]@{
+$Output = [PSCustomObject]@{
     "Path"     = $OutFile.FullName
     "ExitCode" = $result.ExitCode
 }
+Write-Host $Output
 #endregion
 
 #region Boot Loader
@@ -52,13 +52,13 @@ $params = @{
     NoNewWindow  = $True
     Wait         = $True
     PassThru     = $True
-    Verbose      = $True
 }
 $result = Start-Process @params
-[PSCustomObject]@{
+$Output = [PSCustomObject]@{
     "Path"     = $OutFile.FullName
     "ExitCode" = $result.ExitCode
 }
+Write-Host $Output
 #endregion
 
 #region Infra agent
@@ -73,12 +73,15 @@ $params = @{
     NoNewWindow  = $True
     Wait         = $True
     PassThru     = $True
-    Verbose      = $True
 }
-Start-Process @params
+$result = Start-Process @params
+$Output = [PSCustomObject]@{
+    "Path"     = $OutFile.FullName
+    "ExitCode" = $result.ExitCode
+}
+Write-Host $Output
 #>
 #endregion
 
-# if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
 Write-Host "Complete: Microsoft WvdAgents."
 #endregion

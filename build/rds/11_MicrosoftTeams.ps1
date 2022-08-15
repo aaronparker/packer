@@ -32,13 +32,13 @@ $params = @{
     NoNewWindow  = $True
     Wait         = $True
     PassThru     = $True
-    Verbose      = $True
 }
 $result = Start-Process @params
-[PSCustomObject]@{
+$Output = [PSCustomObject]@{
     "Path"     = $OutFile.FullName
     "ExitCode" = $result.ExitCode
 }
+Write-Host $Output
 
 # Teams JSON files
 $ConfigFiles = @((Join-Path -Path "${env:ProgramFiles(x86)}\Teams Installer" -ChildPath "setup.json"),
@@ -61,6 +61,5 @@ foreach ($Path in $ConfigFiles) {
 # Delete the registry auto-start
 REG delete "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run" /v "Teams" /f 2> $Null
 
-# if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Confirm:$False -ErrorAction "SilentlyContinue" }
 Write-Host "Complete: Microsoft Teams."
 #endregion

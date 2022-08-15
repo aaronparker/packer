@@ -2,7 +2,7 @@
     .SYNOPSIS
         Sysprep image.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="Outputs progress to the pipeline log")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification = "Outputs progress to the pipeline log")]
 [CmdletBinding()]
 param (
     [Parameter(Mandatory = $False)]
@@ -31,7 +31,6 @@ function Get-InstalledApplication () {
 #endregion
 
 
-
 # Re-enable Defender
 Write-Host "Enable Windows Defender real time scan"
 Set-MpPreference -DisableRealtimeMonitoring $false
@@ -41,7 +40,7 @@ reg delete HKLM\Software\Policies\Microsoft\WindowsStore /v AutoDownload /f
 
 # Remove C:\Apps folder
 try {
-    if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Force }
+    if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Force -ErrorAction "SilentlyContinue" }
 }
 catch {
     Write-Warning "Failed to remove $Path with: $($_.Exception.Message)."
@@ -65,7 +64,14 @@ else {
 
     #region Sysprep
     $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\State"
-    & $env:SystemRoot\System32\Sysprep\Sysprep.exe /oobe /generalize /quiet /quit
+    $params = @{
+        FilePath     = "$env:SystemRoot\System32\Sysprep\Sysprep.exe"
+        ArgumentList = "/oobe /generalize /quiet /quit"
+        NoNewWindow  = $True
+        Wait         = $False
+        PassThru     = $True
+    }
+    Start-Process @params
     while ($True) {
         $imageState = Get-ItemProperty $RegPath | Select-Object ImageState
         if ($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') {
@@ -79,5 +85,6 @@ else {
     $imageState = Get-ItemProperty $RegPath | Select-Object -Property "ImageState"
     Write-Output $imageState.ImageState
     #endregion
+
     Write-Host "Complete: Sysprep."
 }

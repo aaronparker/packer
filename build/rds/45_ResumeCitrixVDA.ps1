@@ -16,13 +16,13 @@ if (Test-Path -Path $FilePath) {
         NoNewWindow = $True
         Wait        = $True
         PassThru    = $True
-        Verbose     = $True
     }
     $result = Start-Process @params
-    [PSCustomObject]@{
-        "Path"     = $OutFile.FullName
+    $Output = [PSCustomObject]@{
+        "Path"     = "$Env:ProgramData\Citrix\XenDesktopSetup\XenDesktopVdaSetup.exe"
         "ExitCode" = $result.ExitCode
     }
+    Write-Host $Output
 }
 else {
     Write-Host "Citrix VDA not found. Skipping resume."

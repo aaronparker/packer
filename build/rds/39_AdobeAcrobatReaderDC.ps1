@@ -39,13 +39,13 @@ $params = @{
     NoNewWindow  = $True
     Wait         = $True
     PassThru     = $True
-    Verbose      = $True
 }
 $result = Start-Process @params
-[PSCustomObject]@{
+$Output = [PSCustomObject]@{
     "Path"     = $OutFile.FullName
     "ExitCode" = $result.ExitCode
 }
+Write-Host $Output
 
 # Configure update tasks
 Write-Host "Configure Adobe Acrobat Reader services"

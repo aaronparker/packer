@@ -24,8 +24,8 @@ function Install-VcRedistributable ($Path) {
     if (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
     $VcList = Get-VcList -Release 2010, 2012, 2013, 2019
 
-    Save-VcRedist -Path $Path -VcList $VcList -Verbose
-    Install-VcRedist -VcList $VcList -Path $Path -Verbose
+    Save-VcRedist -Path $Path -VcList $VcList
+    Install-VcRedist -VcList $VcList -Path $Path
     Write-Host "Done"
 }
 
