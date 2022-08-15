@@ -70,6 +70,12 @@
     ],
     "provisioners": [
         {
+            "type": "powershell",
+            "scripts": [
+                "build/rds/00_Rds-PrepImage.ps1"
+            ]
+        },
+        {
             "type": "windows-update",
             "search_criteria": "IsInstalled=0",
             "filters": [
@@ -86,8 +92,7 @@
                 "PackagesUrl={{user `packages_url`}}"
             ],
             "scripts": [
-                "build/rds/00_SupportFunctions.ps1",
-                "build/rds/01_Rds-PrepImage.ps1",
+                "build/rds/01_SupportFunctions.ps1",
                 "build/rds/02_Packages.ps1",
                 "build/rds/03_RegionLanguage.ps1",
                 "build/rds/04_Rds-Roles.ps1"
