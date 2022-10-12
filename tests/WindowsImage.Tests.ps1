@@ -4,54 +4,57 @@
     .SYNOPSIS
         Runs Pester tests against a Windows 10 VM to confirm a desired configuration
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="Outputs progress to the pipeline log")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification = "Outputs progress to the pipeline log")]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
 [CmdletBinding()]
-Param()
+param()
 
-# Environment setup
-Write-Host -ForegroundColor Cyan "`n`tGetting operating system version."
-$Builds = @{
-    "19042" = "20H1"
-    "19041" = "2004"
-    "18363" = "1909"
-    "18362" = "1903"
-    "17763" = "1809"
-    "17134" = "1803"
-    "16299" = "1709"
-    "15063" = "1703"
-    "14393" = "1607"
-}
-$Version = $Builds.$((([System.Environment]::OSVersion.Version).Build).ToString())
-
-Write-Host -ForegroundColor Cyan "`tGetting installed Hotfixes."
-$InstalledUpdates = Get-Hotfix
-
-Write-Host -ForegroundColor Cyan "`tGetting Windows edition."
-$Edition = Get-WindowsEdition -Online
-
-Write-Host -ForegroundColor Cyan "`tGetting Windows feature states."
-Switch -Regex ($Edition.Edition) {
-    "Pro|Enterprise" {
-        Write-Host -ForegroundColor Cyan "`tPlatform is Windows 10."
-        $Features = Get-WindowsOptionalFeature -Online
-        $NotInstalled = @("SMB1Protocol", "SMB1Protocol-Client", "SMB1Protocol-Server", "Printing-XPSServices-Features", `
-                "WindowsMediaPlayer", <#"Internet-Explorer-Optional-amd64",#> "WorkFolders-Client", "FaxServicesClientPackage", "TelnetClient")
-        $Installed = @("NetFx4-AdvSrvs", "NetFx3")
-        $VcReleases = @("2010", "2012", "2013", "2019")
+BeforeAll {
+    # Environment setup
+    Write-Host -ForegroundColor Cyan "`n`tGetting operating system version."
+    $Builds = @{
+        "19044" = "21H2"
+        "19043" = "21H1"
+        "19042" = "20H2"
+        "19041" = "2004"
+        "18363" = "1909"
+        "18362" = "1903"
+        "17763" = "1809"
+        "17134" = "1803"
+        "16299" = "1709"
+        "15063" = "1703"
+        "14393" = "1607"
     }
-    "ServerStandard|ServerDatacenter" {
-        Write-Host -ForegroundColor Cyan "`tPlatform is Windows Server."
-        $Features = Get-WindowsFeature
-        $NotInstalled = @("FS-SMB1", "XPS-Viewer")
-        $Installed = @("Windows-Defender", "NET-Framework-45-Core", "NET-Framework-45-Features", `
-                "NET-Framework-Core", "NET-Framework-Features")
-        $VcReleases = @("2019")
+    $Version = $Builds.$((([System.Environment]::OSVersion.Version).Build).ToString())
+
+    Write-Host -ForegroundColor Cyan "`tGetting installed Hotfixes."
+    $InstalledUpdates = Get-Hotfix
+
+    Write-Host -ForegroundColor Cyan "`tGetting Windows edition."
+    $Edition = Get-WindowsEdition -Online
+
+    Write-Host -ForegroundColor Cyan "`tGetting Windows feature states."
+    switch -Regex ($Edition.Edition) {
+        "Pro|Enterprise" {
+            Write-Host -ForegroundColor Cyan "`tPlatform is Windows 10."
+            $Features = Get-WindowsOptionalFeature -Online
+            $NotInstalled = @("SMB1Protocol", "SMB1Protocol-Client", "SMB1Protocol-Server", "Printing-XPSServices-Features", `
+                    "WindowsMediaPlayer", "Internet-Explorer-Optional-amd64", "WorkFolders-Client", "FaxServicesClientPackage", "TelnetClient")
+            $Installed = @("NetFx4-AdvSrvs", "NetFx3")
+            $VcReleases = @("2012", "2013", "2022")
+        }
+        "ServerStandard|ServerDatacenter" {
+            Write-Host -ForegroundColor Cyan "`tPlatform is Windows Server."
+            $Features = Get-WindowsFeature
+            $NotInstalled = @("FS-SMB1", "XPS-Viewer")
+            $Installed = @("Windows-Defender", "NET-Framework-45-Core", "NET-Framework-45-Features", "NET-Framework-Core", "NET-Framework-Features")
+            $VcReleases = @("2022")
+        }
     }
-}
-switch ([intptr]::Size) {
-    4 { $Proc = "x86" }
-    8 { $Proc = "x64" }
+    switch ([intptr]::Size) {
+        4 { $Proc = "x86" }
+        8 { $Proc = "x64" }
+    }
 }
 
 Describe "Windows version validation tests" {
@@ -67,7 +70,7 @@ Describe "Windows feature validation tests" {
     Context "Validate removed or disabled features" {
         foreach ($Feature in $NotInstalled) {
             It "Should not have $Feature installed" {
-                Switch -Regex ($Edition.Edition) {
+                switch -Regex ($Edition.Edition) {
                     "Pro|Enterprise" {
                         ($Features | Where-Object { $_.FeatureName -eq $Feature }).State | Should -Be "Disabled"
                     }
@@ -81,7 +84,7 @@ Describe "Windows feature validation tests" {
     Context "Validate installed features" {
         foreach ($Feature in $Installed) {
             It "Should have $Feature installed" {
-                Switch -Regex ($Edition.Edition) {
+                switch -Regex ($Edition.Edition) {
                     "Pro|Enterprise" {
                         ($Features | Where-Object { $_.FeatureName -eq $Feature }).State | Should -Be "Enabled"
                     }
@@ -129,5 +132,3 @@ Describe "Windows software validation tests" {
         }
     }
 }
-
-Write-Host ""
