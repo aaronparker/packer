@@ -4,13 +4,10 @@
 #>
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification = "Outputs progress to the pipeline log")]
 [CmdletBinding()]
-param (
-    [Parameter(Mandatory = $False)]
-    [System.String] $Path = "$env:SystemDrive\Apps"
-)
+param ()
 
 #region Functions
-function Get-InstalledApplication () {
+function Get-InstalledApplication {
     $RegPath = @("HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*")
     if (-not ([System.IntPtr]::Size -eq 4)) {
         $RegPath += @("HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*")
@@ -29,22 +26,6 @@ function Get-InstalledApplication () {
     return $Apps
 }
 #endregion
-
-
-# Re-enable Defender
-Write-Host "Enable Windows Defender real time scan"
-Set-MpPreference -DisableRealtimeMonitoring $false
-Write-Host "Enable Windows Store updates"
-reg delete HKLM\Software\Policies\Microsoft\Windows\CloudContent /v DisableWindowsConsumerFeatures /f
-reg delete HKLM\Software\Policies\Microsoft\WindowsStore /v AutoDownload /f
-
-# Remove C:\Apps folder
-try {
-    if (Test-Path -Path $Path) { Remove-Item -Path $Path -Recurse -Force -ErrorAction "SilentlyContinue" }
-}
-catch {
-    Write-Warning "Failed to remove $Path with: $($_.Exception.Message)."
-}
 
 # Determine whether the Citrix Virtual Desktop Agent is installed
 $CitrixVDA = Get-InstalledApplication | Where-Object { $_.DisplayName -like "*Machine Identity Service Agent*" }

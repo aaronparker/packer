@@ -211,12 +211,11 @@ build {
   provisioner "powershell" {
     environment_vars = ["Locale=${var.locale}",
                         "PackagesUrl=${var.packages_url}"]
-    scripts          = ["build/rds/00_SupportFunctions.ps1",
-                        "build/rds/01_Rds-PrepImage.ps1",
-                        "build/rds/02_Packages.ps1",
-                        "build/rds/03_RegionLanguage.ps1",
-                        "build/rds/04_Rds-Roles.ps1",
-                        "build/rds/05_Customise.ps1",]
+    scripts          = ["build/rds/000_PrepImage.ps1",
+                        "build/rds/011_SupportFunctions.ps1",
+                        "build/rds/013_RegionLanguage.ps1",
+                        "build/rds/014_RolesFeatures.ps1",
+                        "build/rds/015_Customise.ps1"]
   }
 
   provisioner "windows-restart" {}
@@ -228,21 +227,31 @@ build {
   }
 
   provisioner "powershell" {
-    scripts = ["build/rds/07_MicrosoftVcRedists.ps1",
-                "build/rds/08_MicrosoftFSLogixApps.ps1",
-                "build/rds/09_MicrosoftEdge.ps1",
-                "build/rds/10_Microsoft365Apps.ps1",
-                "build/rds/11_MicrosoftTeams.ps1",
-                "build/rds/12_MicrosoftOneDrive.ps1",
-                "build/rds/14_Wvd-Agents.ps1"]
-  }
-
-  provisioner "windows-restart" {}
-
-  provisioner "powershell" {
     environment_vars = ["AppsUrl=${var.apps_url}"]
-    scripts          = ["build/rds/39_AdobeAcrobatReaderDC.ps1",
-                        "build/rds/40_Rds-LobApps.ps1"]
+    scripts          = ["build/rds/100_MicrosoftVcRedists.ps1",
+                        "build/rds/101_Avd-Agents.ps1",
+                        "build/rds/102_MicrosoftFSLogixApps.ps1",
+                        "build/rds/102_MicrosoftFSLogixAppsPreview.ps1",
+                        "build/rds/103_MicrosoftNET.ps1",
+                        "build/rds/104_MicrosoftEdge.ps1",
+                        "build/rds/200_MicrosoftOneDrive.ps1",
+                        "build/rds/201_MicrosoftTeams.ps1",
+                        "build/rds/202_Microsoft365Apps.ps1",
+                        "build/rds/210_MicrosoftPowerToys.ps1",
+                        "build/rds/211_MicrosoftVisualStudioCode.ps1",
+                        "build/rds/400_AdobeAcrobatReaderDC.ps1",
+                        "build/rds/401_FoxitPDFReader.ps1",
+                        "build/rds/402_ZoomMeetings.ps1",
+                        "build/rds/403_GoogleChrome.ps1",
+                        "build/rds/404_NotepadPlusPlus.ps1",
+                        "build/rds/406_VLCMediaPlayer.ps1",
+                        "build/rds/407_7Zip.ps1",
+                        "build/rds/408_RemoteDesktopAnalyzer.ps1",
+                        "build/rds/409_CiscoWebEx.ps1",
+                        "build/rds/410_ImageGlass.ps1",
+                        "build/rds/411_draw.io.ps1",
+                        "build/rds/412_MozillaFirefox.ps1",
+                        "build/rds/500_Rds-LobApps.ps1"]
   }
 
   provisioner "windows-restart" {}
@@ -265,9 +274,11 @@ build {
   }
 
   provisioner "powershell" {
-    scripts = ["build/rds/98_CitrixOptimizer.ps1",
-                "build/rds/99_Bisf.ps1",
-                "build/rds/Get-Installed.ps1"]
+    scripts = ["build/rds/545_ResumeCitrixVDA.ps1",
+                "build/rds/996_CitrixOptimizer.ps1",
+                "build/rds/997_MicrosoftOptimise.ps1",
+                "build/rds/998_Bisf.ps1",
+                "build/rds/999_CleanupImage.ps1"]
   }
 
   provisioner "file" {

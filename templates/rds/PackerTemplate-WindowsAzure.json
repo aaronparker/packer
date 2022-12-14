@@ -71,9 +71,19 @@
     "provisioners": [
         {
             "type": "powershell",
+            "environment_vars": [
+                "Language={{user `locale`}}"
+            ],
             "scripts": [
-                "build/rds/00_Rds-PrepImage.ps1"
+                "build/rds/000_PrepImage.ps1",
+                "build/rds/011_SupportFunctions.ps1",
+                "build/rds/013_RegionLanguage.ps1",
+                "build/rds/014_RolesFeatures.ps1",
+                "build/rds/015_Customise.ps1"
             ]
+        },
+        {
+            "type": "windows-restart"
         },
         {
             "type": "windows-update",
@@ -84,36 +94,6 @@
                 "include:$true"
             ],
             "update_limit": 25
-        },
-        {
-            "type": "powershell",
-            "environment_vars": [
-                "Locale={{user `locale`}}",
-                "PackagesUrl={{user `packages_url`}}"
-            ],
-            "scripts": [
-                "build/rds/01_SupportFunctions.ps1",
-                "build/rds/02_Packages.ps1",
-                "build/rds/03_RegionLanguage.ps1",
-                "build/rds/04_Rds-Roles.ps1"
-            ]
-        },
-        {
-            "type": "windows-restart"
-        },
-        {
-            "type": "powershell",
-            "scripts": [
-                "build/rds/05_Customise.ps1",
-                "build/rds/06_MicrosoftVcRedists.ps1",
-                "build/rds/07_MicrosoftNET.ps1",
-                "build/rds/08_MicrosoftFSLogixApps.ps1",
-                "build/rds/09_MicrosoftEdge.ps1",
-                "build/rds/10_Microsoft365Apps.ps1",
-                "build/rds/11_MicrosoftTeams.ps1",
-                "build/rds/12_MicrosoftOneDrive.ps1",
-                "build/rds/39_AdobeAcrobatReaderDC.ps1"
-            ]
         },
         {
             "type": "powershell",
@@ -121,7 +101,30 @@
                 "AppsUrl={{user `apps_url`}}"
             ],
             "scripts": [
-                "build/rds/40_Rds-LobApps.ps1"
+                "build/rds/100_MicrosoftVcRedists.ps1",
+                "build/rds/101_Avd-Agents.ps1",
+                "build/rds/102_MicrosoftFSLogixApps.ps1",
+                "build/rds/102_MicrosoftFSLogixAppsPreview.ps1",
+                "build/rds/103_MicrosoftNET.ps1",
+                "build/rds/104_MicrosoftEdge.ps1",
+                "build/rds/200_MicrosoftOneDrive.ps1",
+                "build/rds/201_MicrosoftTeams.ps1",
+                "build/rds/202_Microsoft365Apps.ps1",
+                "build/rds/210_MicrosoftPowerToys.ps1",
+                "build/rds/211_MicrosoftVisualStudioCode.ps1",
+                "build/rds/400_AdobeAcrobatReaderDC.ps1",
+                "build/rds/401_FoxitPDFReader.ps1",
+                "build/rds/402_ZoomMeetings.ps1",
+                "build/rds/403_GoogleChrome.ps1",
+                "build/rds/404_NotepadPlusPlus.ps1",
+                "build/rds/406_VLCMediaPlayer.ps1",
+                "build/rds/407_7Zip.ps1",
+                "build/rds/408_RemoteDesktopAnalyzer.ps1",
+                "build/rds/409_CiscoWebEx.ps1",
+                "build/rds/410_ImageGlass.ps1",
+                "build/rds/411_draw.io.ps1",
+                "build/rds/412_MozillaFirefox.ps1",
+                "build/rds/500_Rds-LobApps.ps1"
             ]
         },
         {
@@ -130,7 +133,7 @@
         {
             "type": "powershell",
             "scripts": [
-                "build/rds/45_ResumeCitrixVDA.ps1"
+                "build/rds/545_ResumeCitrixVDA.ps1"
             ]
         },
         {
@@ -146,6 +149,10 @@
         {
             "type": "powershell",
             "scripts": [
+                "build/rds/996_CitrixOptimizer.ps1",
+                "build/rds/997_MicrosoftOptimise.ps1",
+                "build/rds/998_Bisf.ps1",
+                "build/rds/999_CleanupImage.ps1",
                 "build/rds/Get-Installed.ps1"
             ]
         },

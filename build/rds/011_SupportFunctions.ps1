@@ -1,38 +1,26 @@
-<#
-    .SYNOPSIS
-        Install evergreen core applications.
-#>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification = "Outputs progress to the pipeline log")]
-[CmdletBinding()]
-param ()
+#description: Installs PowerShell modules required for building AVD images (Evergreen, VcRedist, PSWindowsUpdate, etc.)
+#execution mode: Combined
+#tags: Evergreen, VcRedist, Image
 
 #region Script logic
 # Trust the PSGallery for modules
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-Install-PackageProvider -Name "NuGet" -MinimumVersion "2.8.5.208" -Force
+Install-PackageProvider -Name "NuGet" -MinimumVersion "2.8.5.208"
 Install-PackageProvider -Name "PowerShellGet" -MinimumVersion "2.2.5" -Force
 foreach ($Repository in "PSGallery") {
     if (Get-PSRepository | Where-Object { $_.Name -eq $Repository -and $_.InstallationPolicy -ne "Trusted" }) {
-        try {
-            Write-Host "Trusting the repository: $Repository."
-            Set-PSRepository -Name $Repository -InstallationPolicy "Trusted"
-        }
-        catch {
-            $_.Exception.Message
-        }
+        Set-PSRepository -Name $Repository -InstallationPolicy "Trusted"
     }
 }
 
 # Install the Evergreen module; https://github.com/aaronparker/Evergreen
 # Install the VcRedist module; https://docs.stealthpuppy.com/vcredist/
-foreach ($module in "Evergreen", "VcRedist") {
-    Write-Host "Checking module: $module"
+foreach ($module in "Evergreen", "VcRedist", "PSWindowsUpdate") {
     $installedModule = Get-Module -Name $module -ListAvailable -ErrorAction "SilentlyContinue" | `
-        Sort-Object -Property @{ Expression = { [System.Version]$_.Version }; Descending = $true } | `
+        Sort-Object -Property @{ Expression = { [System.Version]$_.Version }; Descending = $true } -ErrorAction "SilentlyContinue" | `
         Select-Object -First 1
     $publishedModule = Find-Module -Name $module -ErrorAction "SilentlyContinue"
-    if (($Null -eq $installedModule) -or ([System.Version]$publishedModule.Version -gt [System.Version]$installedModule.Version)) {
-        Write-Host "Installing module: $module"
+    if (($null -eq $installedModule) -or ([System.Version]$publishedModule.Version -gt [System.Version]$installedModule.Version)) {
         $params = @{
             Name               = $module
             SkipPublisherCheck = $true
@@ -42,6 +30,4 @@ foreach ($module in "Evergreen", "VcRedist") {
         Install-Module @params
     }
 }
-
-Write-Host "Complete: SupportFunctions."
 #endregion
