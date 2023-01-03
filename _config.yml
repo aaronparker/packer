@@ -1,0 +1,9 @@
+title: Packer image reports
+tagline: Application and update reports for Windows images built in Azure DevOps using Hashicorp Packer and Evergreen
+description: >-
+  Application and update reports for Windows images built in Azure DevOps using Hashicorp Packer and Evergreen
+tags:
+  - Packer
+  - Azure
+  - DevOps
+  - Evergreen
