@@ -55,7 +55,7 @@ jobs:
         run: echo "::set-output name=date::$(date +"%Y%m%d")"
 
       - name: Azure Login
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -138,7 +138,7 @@ jobs:
           target: ${{ env.PACKER_FILE }}
 
       - name: Azure Login
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
