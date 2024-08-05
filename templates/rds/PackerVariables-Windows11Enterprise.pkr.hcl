@@ -61,7 +61,7 @@ variable "image_publisher" {
 
 variable "image_sku" {
   type    = string
-  default = "win11-21h2-ent"
+  default = "win11-23h2-ent"
 }
 
 variable "managed_image_resource_group_name" {

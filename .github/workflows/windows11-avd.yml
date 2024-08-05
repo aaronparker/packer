@@ -31,7 +31,7 @@ env:
 #  IMAGE_DATE: '$(Date:yyyyMMdd).${{ github.run_number }}'
 #  IMAGE_OFFER: 'Windows-11'
 #  IMAGE_PUBLISHER: 'MicrosoftWindowsDesktop'
-#  IMAGE_SKU: 'win11-21h2-ent'
+#  IMAGE_SKU: 'win11-23h2-ent'
   LOCALE: 'en-AU'
   MANAGED_IMAGE_RESOURCE_GROUP_NAME: 'rg-Images-AustraliaEast'
   PACKAGES_URL: 'https://stpyimgbuildaue.blob.core.windows.net/packages'
@@ -84,25 +84,25 @@ jobs:
         include:
           - image_id: Windows-11-Ent
             packer_file: "templates/rds/PackerTemplate-WindowsAzure-Test.pkr.hcl"
-            destination_image_name: 'MicrosoftWindowsDesktop-Windows-11-win11-21h2-ent'
-            destination_image_description: "Windows 11 Enterprise 21H2"
+            destination_image_name: 'MicrosoftWindowsDesktop-Windows-11-win11-23h2-ent'
+            destination_image_description: "Windows 11 Enterprise 23h2"
             source_image_publisher: MicrosoftWindowsDesktop
             source_image_offer: Windows-11
-            source_image_sku: win11-21h2-ent
+            source_image_sku: win11-23h2-ent
             destination_os_type: Windows
             destination_offer: Windows-11
-            destination_sku: win11-21h2-ent
+            destination_sku: win11-23h2-ent
 
           - image_id: Windows-11-Avd
             packer_file: "templates/rds/PackerTemplate-WindowsAzure-Test.pkr.hcl"
-            destination_image_name: 'MicrosoftWindowsDesktop-Windows-11-win11-21h2-avd'
-            destination_image_description: "Windows 11 Enterprise 21H2"
+            destination_image_name: 'MicrosoftWindowsDesktop-Windows-11-win11-23h2-avd'
+            destination_image_description: "Windows 11 Enterprise 23h2"
             source_image_publisher: MicrosoftWindowsDesktop
             source_image_offer: Windows-11
-            source_image_sku: win11-21h2-avd
+            source_image_sku: win11-23h2-avd
             destination_os_type: Windows
             destination_offer: Windows-11
-            destination_sku: win11-21h2-avd
+            destination_sku: win11-23h2-avd
     env:
       PACKER_FILE: ${{ matrix.packer_file }}
       DESTINATION_IMAGE_NAME: ${{ matrix.destination_image_name }}
